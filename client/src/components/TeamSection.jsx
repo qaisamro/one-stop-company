@@ -141,7 +141,7 @@ const TeamSection = () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/team?lang=${i18n.language}`);
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/team?lang=${i18n.language}`);
                 setTeam(response.data);
             } catch (err) {
                 console.error("Error fetching team members:", err);

@@ -29,7 +29,7 @@ const BlogsSection = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/blogs?lang=${i18n.language}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blogs?lang=${i18n.language}`);
         setBlogs(response.data);
       } catch (err) {
         console.error('Error fetching blogs:', err);

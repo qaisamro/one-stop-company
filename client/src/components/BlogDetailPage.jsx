@@ -24,7 +24,7 @@ const BlogDetailPage = () => {
         setError(null);
 
         axios
-            .get(`${process.env.REACT_APP_API_URL}/api/blogs/${id}?lang=${i18n.language}`)
+            .get(`${import.meta.env.VITE_API_URL}/api/blogs/${id}?lang=${i18n.language}`)
             .then((res) => {
                 setBlog(res.data);
                 setLoading(false);

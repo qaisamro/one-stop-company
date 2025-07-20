@@ -21,7 +21,7 @@ const AboutSection = () => {
     setError(null);
 
     axios
-      .get(`${process.env.REACT_APP_API_URL}/api/about?lang=${i18n.language}`)
+      .get(`${import.meta.env.VITE_API_URL}/api/about?lang=${i18n.language}`)
       .then((res) => {
         setAboutData(res.data);
         setIsLoading(false);

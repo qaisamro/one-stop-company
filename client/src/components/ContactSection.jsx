@@ -46,7 +46,7 @@ const ContactSection = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post('${process.env.REACT_APP_API_URL}/api/contacts', form);
+      await axios.post('${import.meta.env.VITE_API_URL}/api/contacts', form);
       setSent(true);
       setForm({ name: '', email: '', message: '' });
       setTimeout(() => setSent(false), 5000);

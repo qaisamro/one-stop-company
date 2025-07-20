@@ -77,7 +77,7 @@ const CombinedChooseUsAndStatistics = () => {
       setLoadingFeatures(true);
       setErrorFeatures(null);
       try {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/features?lang=${i18n.language}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/features?lang=${i18n.language}`);
         setFeaturesData(res.data);
         const currentTabs = [
           res.data.section?.tab1_title,
@@ -107,7 +107,7 @@ const CombinedChooseUsAndStatistics = () => {
       setLoadingStats(true);
       setErrorStats(null);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/statistics?lang=${i18n.language}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/statistics?lang=${i18n.language}`);
         const formattedStats = response.data.map(stat => {
           const originalValue = String(stat.value);
           const numericValue = originalValue.endsWith('k') ? parseFloat(originalValue) * 1000 : parseInt(originalValue, 10);

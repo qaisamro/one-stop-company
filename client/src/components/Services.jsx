@@ -20,7 +20,7 @@ const Services = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/services?lang=${i18n.language}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/services?lang=${i18n.language}`);
         setServices(response.data);
       } catch (err) {
         console.error("Error fetching services:", err);

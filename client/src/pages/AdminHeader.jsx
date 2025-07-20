@@ -26,7 +26,7 @@ const AdminHeader = () => {
   const fetchLinks = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/header?lang=${form.language}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/header?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setLinks(response.data);
@@ -55,7 +55,7 @@ const AdminHeader = () => {
     setLoading(true);
     try {
       await axios.post(
-        '${process.env.REACT_APP_API_URL}/api/header',
+        '${import.meta.env.VITE_API_URL}/api/header',
         { label: form.label, href: form.href, language: form.language, isSection: form.isSection, content: form.isSection ? form.content : null },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -87,7 +87,7 @@ const AdminHeader = () => {
     setLoading(true);
     try {
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/api/header/${form.id}`,
+        `${import.meta.env.VITE_API_URL}/api/header/${form.id}`,
         { label: form.label, href: form.href, language: form.language, isSection: form.isSection, content: form.isSection ? form.content : null },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -106,7 +106,7 @@ const AdminHeader = () => {
   const handleDeleteLink = async (id) => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/header/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/header/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تم حذف الرابط بنجاح!'); // Hardcoded Arabic message

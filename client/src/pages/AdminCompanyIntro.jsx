@@ -24,7 +24,7 @@ const AdminCompanyIntro = () => {
     const fetchIntro = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/company-intro?lang=${form.language}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/company-intro?lang=${form.language}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             const fetchedDescriptions = Array.isArray(response.data.description)
@@ -84,7 +84,7 @@ const AdminCompanyIntro = () => {
             const formData = new FormData();
             formData.append('image', form.image);
             formData.append('language', form.language);
-            await axios.post('${process.env.REACT_APP_API_URL}/api/company-intro/image', formData, {
+            await axios.post('${import.meta.env.VITE_API_URL}/api/company-intro/image', formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data',
@@ -118,7 +118,7 @@ const AdminCompanyIntro = () => {
             return;
         }
         try {
-            const response = await axios.put('${process.env.REACT_APP_API_URL}/api/company-intro', {
+            const response = await axios.put('${import.meta.env.VITE_API_URL}/api/company-intro', {
                 title: form.title,
                 description: descriptionArrayToSend,
                 language: form.language,
@@ -144,7 +144,7 @@ const AdminCompanyIntro = () => {
     const handleDeleteImage = async (index) => {
         setLoading(true);
         try {
-            await axios.delete(`${process.env.REACT_APP_API_URL}/api/company-intro/image/${index}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/company-intro/image/${index}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
                 data: { language: form.language },
             });

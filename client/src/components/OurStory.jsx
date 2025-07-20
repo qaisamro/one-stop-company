@@ -17,7 +17,7 @@ const OurStory = () => {
         setLoading(true);
         setError(null);
         axios
-            .get(`${process.env.REACT_APP_API_URL}/api/story?lang=${i18n.language}`)
+            .get(`${import.meta.env.VITE_API_URL}/api/story?lang=${i18n.language}`)
             .then((res) => {
                 const fetchedStory = res.data || { id: null, title: '', content: '', image_url: null };
                 setStory(fetchedStory);

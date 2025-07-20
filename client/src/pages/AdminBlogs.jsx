@@ -39,7 +39,7 @@ const AdminBlogs = () => {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/blogs?lang=${form.language}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blogs?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setBlogs(response.data);
@@ -137,7 +137,7 @@ const AdminBlogs = () => {
 
     try {
       if (editingBlogId) {
-        await axios.put(`${process.env.REACT_APP_API_URL}/api/blogs/${editingBlogId}`, formData, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/blogs/${editingBlogId}`, formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'multipart/form-data',
@@ -145,7 +145,7 @@ const AdminBlogs = () => {
         });
         setMessage('Blog updated successfully! ✅');
       } else {
-        await axios.post('${process.env.REACT_APP_API_URL}/api/blogs', formData, {
+        await axios.post('${import.meta.env.VITE_API_URL}/api/blogs', formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'multipart/form-data',
@@ -175,7 +175,7 @@ const AdminBlogs = () => {
     setError('');
     setMessage('');
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/blogs/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('Blog deleted successfully! ✅');

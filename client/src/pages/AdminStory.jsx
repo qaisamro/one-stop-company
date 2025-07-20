@@ -13,7 +13,7 @@ const AdminStory = () => {
     useEffect(() => {
         setLoading(true);
         axios
-            .get(`${process.env.REACT_APP_API_URL}/api/story?lang=${i18n.language}`)
+            .get(`${import.meta.env.VITE_API_URL}/api/story?lang=${i18n.language}`)
             .then((res) => {
                 const fetchedStory = res.data || { id: null, title: '', content: '', image_url: null, language: i18n.language };
                 setStory(fetchedStory);
@@ -56,10 +56,10 @@ const AdminStory = () => {
         }
 
         const request = story.id
-            ? axios.put(`${process.env.REACT_APP_API_URL}/api/story/${story.id}`, formData, {
+            ? axios.put(`${import.meta.env.VITE_API_URL}/api/story/${story.id}`, formData, {
                   headers: { 'Content-Type': 'multipart/form-data' },
               })
-            : axios.post(`${process.env.REACT_APP_API_URL}/api/story`, formData, {
+            : axios.post(`${import.meta.env.VITE_API_URL}/api/story`, formData, {
                   headers: { 'Content-Type': 'multipart/form-data' },
               });
 

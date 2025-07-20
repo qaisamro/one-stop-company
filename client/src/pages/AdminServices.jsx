@@ -29,7 +29,7 @@ const AdminServices = () => {
     setLoading(true);
     try {
       // استخدام اللغة الممررة للدالة
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/services?lang=${lang}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/services?lang=${lang}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setServices(response.data);
@@ -54,7 +54,7 @@ const AdminServices = () => {
     setLoading(true);
     try {
       // إرسال اللغة المختارة من النموذج
-      await axios.post('${process.env.REACT_APP_API_URL}/api/services', form, {
+      await axios.post('${import.meta.env.VITE_API_URL}/api/services', form, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تمت الإضافة بنجاح! ✅');
@@ -74,7 +74,7 @@ const AdminServices = () => {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/services/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/services/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تم الحذف بنجاح! ✅');
