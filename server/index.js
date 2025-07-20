@@ -37,3 +37,8 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+app.use(cors({
+  origin: '*', // أو استبدل * بدومين موقعك الحقيقي لحماية أكثر
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));

@@ -17,7 +17,7 @@ const OurStory = () => {
         setLoading(true);
         setError(null);
         axios
-            .get(`http://localhost:5000/api/story?lang=${i18n.language}`)
+            .get(`${process.env.REACT_APP_API_URL}/api/story?lang=${i18n.language}`)
             .then((res) => {
                 const fetchedStory = res.data || { id: null, title: '', content: '', image_url: null };
                 setStory(fetchedStory);

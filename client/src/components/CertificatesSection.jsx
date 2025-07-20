@@ -53,7 +53,7 @@ const CertificatesSection = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`http://localhost:5000/api/certificates?lang=${i18n.language}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/certificates?lang=${i18n.language}`);
         setCerts(response.data);
       } catch (err) {
         console.error("Error fetching certificates:", err);

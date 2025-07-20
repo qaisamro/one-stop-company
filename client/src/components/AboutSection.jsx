@@ -21,7 +21,7 @@ const AboutSection = () => {
     setError(null);
 
     axios
-      .get(`http://localhost:5000/api/about?lang=${i18n.language}`)
+      .get(`${process.env.REACT_APP_API_URL}/api/about?lang=${i18n.language}`)
       .then((res) => {
         setAboutData(res.data);
         setIsLoading(false);

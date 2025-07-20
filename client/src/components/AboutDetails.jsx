@@ -31,7 +31,7 @@ const AboutDetails = () => {
 
     // Fetch only the data needed for features
     axios
-      .get(`http://localhost:5000/api/about?lang=${i18n.language}`)
+      .get(`${process.env.REACT_APP_API_URL}/api/about?lang=${i18n.language}`)
       .then((res) => {
         setFeatures(res.data.features || []);
         setIsLoading(false);

@@ -28,7 +28,7 @@ const AdminAbout = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(`http://localhost:5000/api/about?lang=${lang}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/about?lang=${lang}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -138,7 +138,7 @@ const AdminAbout = () => {
     }
 
     try {
-      await axios.put('http://localhost:5000/api/about', data, {
+      await axios.put('${process.env.REACT_APP_API_URL}/api/about', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,

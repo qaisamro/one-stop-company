@@ -33,7 +33,7 @@ const AdminTeam = () => {
   const fetchTeam = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/team?lang=${form.language}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/team?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMembers(response.data);
@@ -92,7 +92,7 @@ const AdminTeam = () => {
     formData.append('socials', JSON.stringify(form.socials.filter(s => s.url.trim() !== '')));
 
     try {
-      await axios.post('http://localhost:5000/api/team', formData, {
+      await axios.post('${process.env.REACT_APP_API_URL}/api/team', formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
@@ -115,7 +115,7 @@ const AdminTeam = () => {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/team/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/team/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage(t('member_deleted') || 'تم الحذف بنجاح! ✅');
@@ -164,7 +164,7 @@ const AdminTeam = () => {
     formData.append('socials', JSON.stringify(form.socials.filter(s => s.url.trim() !== '')));
 
     try {
-      await axios.put(`http://localhost:5000/api/team/${form.editingId}`, formData, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/team/${form.editingId}`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',

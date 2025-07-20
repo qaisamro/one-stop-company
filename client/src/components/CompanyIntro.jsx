@@ -6,7 +6,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '${process.env.REACT_APP_API_URL}/api';
 
 const CompanyIntro = () => {
     const { t, i18n } = useTranslation();

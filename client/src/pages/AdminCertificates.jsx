@@ -26,7 +26,7 @@ const AdminCertificates = () => {
   const fetchCertificates = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/certificates?lang=${form.language}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/certificates?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setCertificates(response.data);
@@ -64,7 +64,7 @@ const AdminCertificates = () => {
     formData.append('language', form.language);
 
     try {
-      await axios.post('http://localhost:5000/api/certificates', formData, {
+      await axios.post('${process.env.REACT_APP_API_URL}/api/certificates', formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
@@ -115,7 +115,7 @@ const AdminCertificates = () => {
     formData.append('language', form.language);
 
     try {
-      await axios.put(`http://localhost:5000/api/certificates/${editingCertId}`, formData, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/certificates/${editingCertId}`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
@@ -140,7 +140,7 @@ const AdminCertificates = () => {
     setError('');
     setMessage('');
     try {
-      await axios.delete(`http://localhost:5000/api/certificates/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/certificates/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تم الحذف بنجاح! ✅');

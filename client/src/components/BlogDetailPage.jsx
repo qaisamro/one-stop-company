@@ -24,7 +24,7 @@ const BlogDetailPage = () => {
         setError(null);
 
         axios
-            .get(`http://localhost:5000/api/blogs/${id}?lang=${i18n.language}`)
+            .get(`${process.env.REACT_APP_API_URL}/api/blogs/${id}?lang=${i18n.language}`)
             .then((res) => {
                 setBlog(res.data);
                 setLoading(false);
