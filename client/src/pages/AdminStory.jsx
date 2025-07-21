@@ -13,7 +13,7 @@ const AdminStory = () => {
     useEffect(() => {
         setLoading(true);
         axios
-            .get(`${import.meta.env.VITE_API_URL}/api/story?lang=${i18n.language}`)
+            .get(`https://one-stop-company-1.onrender.com/api/story?lang=${i18n.language}`)
             .then((res) => {
                 const fetchedStory = res.data || { id: null, title: '', content: '', image_url: null, language: i18n.language };
                 setStory(fetchedStory);
@@ -56,10 +56,10 @@ const AdminStory = () => {
         }
 
         const request = story.id
-            ? axios.put(`${import.meta.env.VITE_API_URL}/api/story/${story.id}`, formData, {
+            ? axios.put(`https://one-stop-company-1.onrender.com/api/story/${story.id}`, formData, {
                   headers: { 'Content-Type': 'multipart/form-data' },
               })
-            : axios.post(`${import.meta.env.VITE_API_URL}/api/story`, formData, {
+            : axios.post(`https://one-stop-company-1.onrender.com/api/story`, formData, {
                   headers: { 'Content-Type': 'multipart/form-data' },
               });
 

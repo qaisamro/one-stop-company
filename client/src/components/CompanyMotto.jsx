@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE_URL = '${import.meta.env.VITE_API_URL}/api';
+const API_BASE_URL = 'https://one-stop-company-1.onrender.com/api';
 
 const CompanyMotto = () => {
     const { t, i18n } = useTranslation();

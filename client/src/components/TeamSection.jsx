@@ -141,7 +141,7 @@ const TeamSection = () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/team?lang=${i18n.language}`);
+                const response = await axios.get(`https://one-stop-company-1.onrender.com/api/team?lang=${i18n.language}`);
                 setTeam(response.data);
             } catch (err) {
                 console.error("Error fetching team members:", err);

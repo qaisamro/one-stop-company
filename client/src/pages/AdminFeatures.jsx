@@ -26,7 +26,7 @@ const AdminFeatures = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/features?lang=${language}`);
+      const res = await axios.get(`https://one-stop-company-1.onrender.com/api/features?lang=${language}`);
       if (res.data.section) {
         setSectionData(res.data.section);
         setFeatures(res.data.items); // جلب جميع المميزات
@@ -65,10 +65,10 @@ const AdminFeatures = () => {
       }
 
       if (sectionData.id) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/api/features/${sectionData.id}`, sectionData);
+        await axios.put(`https://one-stop-company-1.onrender.com/api/features/${sectionData.id}`, sectionData);
         toast.success("تم تحديث القسم بنجاح!");
       } else {
-        const res = await axios.post('${import.meta.env.VITE_API_URL}/api/features', sectionData);
+        const res = await axios.post('https://one-stop-company-1.onrender.com/api/features', sectionData);
         setSectionData(res.data.section);
         toast.success("تم إنشاء القسم بنجاح!");
       }
@@ -90,7 +90,7 @@ const AdminFeatures = () => {
     formData.append('image', file);
 
     try {
-      const res = await axios.post('${import.meta.env.VITE_API_URL}/api/upload/image', formData, {
+      const res = await axios.post('https://one-stop-company-1.onrender.com/api/upload/image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -118,7 +118,7 @@ const AdminFeatures = () => {
 
     try {
       // <--- إرسال tab_index مع الميزة
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/features/${sectionData.id}/item`, newFeature);
+      await axios.post(`https://one-stop-company-1.onrender.com/api/features/${sectionData.id}/item`, newFeature);
       setNewFeature({ text: '', icon: '✔️', tab_index: newFeature.tab_index }); // إعادة تهيئة للحفاظ على التاب المحدد
       fetchData();
       toast.success("تمت إضافة الميزة بنجاح!");
@@ -133,7 +133,7 @@ const AdminFeatures = () => {
 
   const handleDeleteFeature = async id => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/features/item/${id}`);
+      await axios.delete(`https://one-stop-company-1.onrender.com/api/features/item/${id}`);
       fetchData();
       toast.success("تم حذف الميزة بنجاح!");
     } catch (err) {

@@ -22,7 +22,7 @@ const AdminMessages = () => {
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('${import.meta.env.VITE_API_URL}/api/contacts', {
+      const response = await axios.get('https://one-stop-company-1.onrender.com/api/contacts', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessages(response.data);

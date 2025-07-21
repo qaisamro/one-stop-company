@@ -26,7 +26,7 @@ const AdminCertificates = () => {
   const fetchCertificates = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/certificates?lang=${form.language}`, {
+      const response = await axios.get(`https://one-stop-company-1.onrender.com/api/certificates?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setCertificates(response.data);
@@ -64,7 +64,7 @@ const AdminCertificates = () => {
     formData.append('language', form.language);
 
     try {
-      await axios.post('${import.meta.env.VITE_API_URL}/api/certificates', formData, {
+      await axios.post('https://one-stop-company-1.onrender.com/api/certificates', formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
@@ -115,7 +115,7 @@ const AdminCertificates = () => {
     formData.append('language', form.language);
 
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/api/certificates/${editingCertId}`, formData, {
+      await axios.put(`https://one-stop-company-1.onrender.com/api/certificates/${editingCertId}`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
@@ -140,7 +140,7 @@ const AdminCertificates = () => {
     setError('');
     setMessage('');
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/certificates/${id}`, {
+      await axios.delete(`https://one-stop-company-1.onrender.com/api/certificates/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تم الحذف بنجاح! ✅');

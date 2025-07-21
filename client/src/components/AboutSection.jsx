@@ -21,7 +21,7 @@ const AboutSection = () => {
     setError(null);
 
     axios
-      .get(`${import.meta.env.VITE_API_URL}/api/about?lang=${i18n.language}`)
+      .get(`https://one-stop-company-1.onrender.com/api/about?lang=${i18n.language}`)
       .then((res) => {
         setAboutData(res.data);
         setIsLoading(false);

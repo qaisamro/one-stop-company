@@ -24,7 +24,7 @@ const BlogDetailPage = () => {
         setError(null);
 
         axios
-            .get(`${import.meta.env.VITE_API_URL}/api/blogs/${id}?lang=${i18n.language}`)
+            .get(`https://one-stop-company-1.onrender.com/api/blogs/${id}?lang=${i18n.language}`)
             .then((res) => {
                 setBlog(res.data);
                 setLoading(false);

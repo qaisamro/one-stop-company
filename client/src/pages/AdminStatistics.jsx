@@ -25,7 +25,7 @@ const AdminStatistics = () => {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/statistics?lang=${form.language}`, {
+      const response = await axios.get(`https://one-stop-company-1.onrender.com/api/statistics?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setStats(response.data);
@@ -44,7 +44,7 @@ const AdminStatistics = () => {
   const handleAdd = async () => {
     setLoading(true);
     try {
-      await axios.post('${import.meta.env.VITE_API_URL}/api/statistics', form, {
+      await axios.post('https://one-stop-company-1.onrender.com/api/statistics', form, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تمت الإضافة بنجاح! ✅');
@@ -62,7 +62,7 @@ const AdminStatistics = () => {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/statistics/${id}`, {
+      await axios.delete(`https://one-stop-company-1.onrender.com/api/statistics/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تم الحذف بنجاح! ✅');

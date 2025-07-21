@@ -41,7 +41,7 @@ const AdminProjects = () => {
     const fetchProjects = async (lang) => {
         setLoading(true);
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects?lang=${lang}`, {
+            const response = await axios.get(`https://one-stop-company-1.onrender.com/api/projects?lang=${lang}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             setProjects(response.data);
@@ -56,8 +56,8 @@ const AdminProjects = () => {
 
     const fetchProjectBackground = async () => {
         try {
-            const response = await axios.get('${import.meta.env.VITE_API_URL}/api/projects/background');
-            setCurrentBackgroundImage(response.data.imagePath ? `${import.meta.env.VITE_API_URL}${response.data.imagePath}` : '');
+            const response = await axios.get('https://one-stop-company-1.onrender.com/api/projects/background');
+            setCurrentBackgroundImage(response.data.imagePath ? `https://one-stop-company-1.onrender.com/api${response.data.imagePath}` : '');
         } catch (err) {
             console.error('Error fetching project background:', err);
         }
@@ -112,7 +112,7 @@ const AdminProjects = () => {
                 formData.append('additional_images', file);
             });
             formData.append('sections', JSON.stringify(form.sections));
-            const response = await axios.post('${import.meta.env.VITE_API_URL}/api/projects', formData, {
+            const response = await axios.post('https://one-stop-company-1.onrender.com/api/projects', formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data',
@@ -181,7 +181,7 @@ const AdminProjects = () => {
                 formData.append('additional_images', file);
             });
             formData.append('sections', JSON.stringify(form.sections));
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/projects/${form.id}`, formData, {
+            const response = await axios.put(`https://one-stop-company-1.onrender.com/api/projects/${form.id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data',
@@ -215,7 +215,7 @@ const AdminProjects = () => {
     const handleDelete = async (id) => {
         setLoading(true);
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/projects/${id}?lang=${form.language}`, {
+            const response = await axios.delete(`https://one-stop-company-1.onrender.com/api/projects/${id}?lang=${form.language}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             setMessage(t('messages.deleteProjectSuccess'));
@@ -239,7 +239,7 @@ const AdminProjects = () => {
         try {
             const formData = new FormData();
             formData.append('image', backgroundImageFile);
-            const response = await axios.post('${import.meta.env.VITE_API_URL}/api/projects/background', formData, {
+            const response = await axios.post('https://one-stop-company-1.onrender.com/api/projects/background', formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'multipart/form-data',
@@ -504,7 +504,7 @@ const AdminProjects = () => {
                                             )}
                                             {project.image && (
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL}${project.image}`}
+                                                    src={`https://one-stop-company-1.onrender.com/api${project.image}`}
                                                     alt={project.title}
                                                     className="w-20 mt-2 rounded"
                                                 />
@@ -516,7 +516,7 @@ const AdminProjects = () => {
                                                         {project.additional_images.map((img, index) => (
                                                             <img
                                                                 key={index}
-                                                                src={`${import.meta.env.VITE_API_URL}${img}`}
+                                                                src={`https://one-stop-company-1.onrender.com/api${img}`}
                                                                 alt={`${t('additionalImages')} ${index + 1}`}
                                                                 className="w-20 h-20 object-cover rounded"
                                                             />

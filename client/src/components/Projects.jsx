@@ -30,14 +30,14 @@ const Projects = () => {
             setLoading(true);
             try {
                 // Fetch projects
-                const projectsResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects?lang=${i18n.language}`);
+                const projectsResponse = await axios.get(`https://one-stop-company-1.onrender.com/api/projects?lang=${i18n.language}`);
                 console.log('Fetched projects:', projectsResponse.data);
                 setProjects(projectsResponse.data.filter(project => project.id));
 
                 // Fetch background image
                 try {
-                    const backgroundResponse = await axios.get('${import.meta.env.VITE_API_URL}/api/projects/background');
-                    setBackgroundImage(backgroundResponse.data.imagePath ? `${import.meta.env.VITE_API_URL}${backgroundResponse.data.imagePath}` : '');
+                    const backgroundResponse = await axios.get('https://one-stop-company-1.onrender.com/api/projects/background');
+                    setBackgroundImage(backgroundResponse.data.imagePath ? `https://one-stop-company-1.onrender.com/api${backgroundResponse.data.imagePath}` : '');
                 } catch (bgErr) {
                     console.error('Error fetching background:', bgErr);
                     setBackgroundImage('');
@@ -120,7 +120,7 @@ const Projects = () => {
                                     {project.image && (
                                         <div className="relative h-56 overflow-hidden">
                                             <img
-                                                src={`${import.meta.env.VITE_API_URL}${project.image}`}
+                                                src={`https://one-stop-company-1.onrender.com/api${project.image}`}
                                                 alt={project.title}
                                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                             />

@@ -10,7 +10,7 @@ const AdminLogin = () => {
 
   const login = async () => {
     try {
-      const response = await axios.post('${import.meta.env.VITE_API_URL}/api/admin/login', {
+      const response = await axios.post('https://one-stop-company-1.onrender.com/api/admin/login', {
         email,
         password,
       });

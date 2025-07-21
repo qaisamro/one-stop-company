@@ -38,7 +38,7 @@ const ProjectDetailPage = () => {
             setLoading(true);
             console.log(`Fetching project with ID: ${id}, language: ${i18n.language}`);
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/projects/${id}?lang=${i18n.language}`);
+                const response = await axios.get(`https://one-stop-company-1.onrender.com/api/projects/${id}?lang=${i18n.language}`);
                 setProject(response.data);
                 setError('');
             } catch (err) {
@@ -137,7 +137,7 @@ const ProjectDetailPage = () => {
                                     {project.image && (
                                         <SwiperSlide>
                                             <img
-                                                src={`${import.meta.env.VITE_API_URL}${project.image}`}
+                                                src={`https://one-stop-company-1.onrender.com/api${project.image}`}
                                                 alt={project.title}
                                                 className="w-full h-80 sm:h-96 object-cover rounded-2xl"
                                             />
@@ -146,7 +146,7 @@ const ProjectDetailPage = () => {
                                     {project.additional_images?.map((img, index) => (
                                         <SwiperSlide key={index}>
                                             <img
-                                                src={`${import.meta.env.VITE_API_URL}${img}`}
+                                                src={`https://one-stop-company-1.onrender.com/api${img}`}
                                                 alt={`${project.title} - ${index + 1}`}
                                                 className="w-full h-80 sm:h-96 object-cover rounded-2xl"
                                             />
