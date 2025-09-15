@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 // استيراد أيقونة TikTok بالإضافة إلى الأيقونات الموجودة
-import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaLinkedin, FaTiktok,FaWhatsapp } from 'react-icons/fa';
 
 const Footer = () => {
   const { t, i18n } = useTranslation();
@@ -89,7 +89,7 @@ const Footer = () => {
               {/* Location Text */}
               <li>
                 <p className="text-white dark:text-gray-200">
-                  {t('full_address') || 'Palestine - Hebron - Dura'}
+                  {t('full_address') || 'Palestine - Hebron - Dura - Banks Street'}
                 </p>
               </li>
               {/* Location Map Button */}
@@ -125,49 +125,69 @@ const Footer = () => {
 
           {/* Social Media */}
           <div className="mt-4 md:mt-0">
-            <h4 className="text-lg font-bold mb-4" style={{ color: colors.yellow }}> 
-              {t('follow_us')}
-            </h4>
-            <div className={`flex gap-5 text-2xl ${isRTL ? 'justify-end' : 'justify-start'}`}>
-              <a href="https://www.facebook.com/1StopCompany" target="_blank" rel="noopener noreferrer"
-                  className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
-                  onMouseEnter={(e) => e.currentTarget.style.color = colors.yellow}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
-                  aria-label="Facebook">
-                <FaFacebook />
-              </a>
-              <a href="https://www.instagram.com/1stopcompany" target="_blank" rel="noopener noreferrer"
-                  className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
-                  onMouseEnter={(e) => e.currentTarget.style.color = colors.yellow}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
-                  aria-label="Instagram">
-                <FaInstagram />
-              </a>
-              <a href="https://www.linkedin.com/company/1stopcompany" target="_blank" rel="noopener noreferrer"
-                  className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
-                  onMouseEnter={(e) => e.currentTarget.style.color = colors.yellow}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
-                  aria-label="LinkedIn">
-                <FaLinkedin />
-              </a>
-              {/* TikTok Link */}
-              <a href="https://www.tiktok.com/@1stopcompany?_t=ZS-8y4pVOkzAi0&_r=1" target="_blank" rel="noopener noreferrer"
-                  className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
-                  onMouseEnter={(e) => e.currentTarget.style.color = colors.yellow}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
-                  aria-label="TikTok">
-                <FaTiktok />
-              </a>
-              {/* YouTube Link - keeping it if you plan to add it later, otherwise remove */}
-              {/* <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
-                  className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
-                  onMouseEnter={(e) => e.currentTarget.style.color = colors.yellow}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'white'}
-                  aria-label="Youtube">
-                <FaYoutube />
-              </a> */}
-            </div>
-          </div>
+  <h4 className="text-lg font-bold mb-4" style={{ color: colors.yellow }}>
+    {t('follow_us')}
+  </h4>
+  <div className={`flex gap-5 text-2xl ${isRTL ? 'justify-end' : 'justify-start'}`}>
+    <a
+      href="https://www.facebook.com/1StopCompany"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
+      onMouseEnter={(e) => (e.currentTarget.style.color = colors.yellow)}
+      onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+      aria-label="Facebook"
+    >
+      <FaFacebook />
+    </a>
+    <a
+      href="https://instagram.com/one_stop_company1"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
+      onMouseEnter={(e) => (e.currentTarget.style.color = colors.yellow)}
+      onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+      aria-label="Instagram"
+    >
+      <FaInstagram />
+    </a>
+    <a
+      href="https://www.linkedin.com/company/1stopcompany"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
+      onMouseEnter={(e) => (e.currentTarget.style.color = colors.yellow)}
+      onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+      aria-label="LinkedIn"
+    >
+      <FaLinkedin />
+    </a>
+    {/* TikTok Link */}
+    <a
+      href="https://tiktok.com/@one_stop_company"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
+      onMouseEnter={(e) => (e.currentTarget.style.color = colors.yellow)}
+      onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+      aria-label="TikTok"
+    >
+      <FaTiktok />
+    </a>
+    {/* WhatsApp Link - Added here */}
+    <a
+      href="https://api.whatsapp.com/send?phone=972569901416"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-white dark:text-gray-200 hover:scale-110 transition-transform duration-200"
+      onMouseEnter={(e) => (e.currentTarget.style.color = colors.yellow)}
+      onMouseLeave={(e) => (e.currentTarget.style.color = 'white')}
+      aria-label="WhatsApp"
+    >
+      <FaWhatsapp />
+    </a>
+  </div>
+</div>
         </div>
 
         {/* Bottom Copyright */}

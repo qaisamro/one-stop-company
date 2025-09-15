@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminStatistics = () => {
   const [stats, setStats] = useState([]);
@@ -8,11 +10,11 @@ const AdminStatistics = () => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // مغلق افتراضيًا على الهواتف
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
   const navigate = useNavigate();
 
-  // التحقق من التوكن
+  // Check for token
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -25,13 +27,14 @@ const AdminStatistics = () => {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://one-stop-company-1.onrender.com/api/statistics?lang=${form.language}`, {
+      const response = await axios.get(`http://one-stop.ps/api/statistics?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setStats(response.data);
       setError('');
     } catch (err) {
-      setError('فشل تحميل الإحصائيات');
+      setError('Failed to load statistics');
+      toast.error('Failed to load statistics');
     } finally {
       setLoading(false);
     }
@@ -42,18 +45,23 @@ const AdminStatistics = () => {
   };
 
   const handleAdd = async () => {
+    if (!form.label.trim() || !form.value) {
+      toast.warn('Label and value are required');
+      return;
+    }
     setLoading(true);
     try {
-      await axios.post('https://one-stop-company-1.onrender.com/api/statistics', form, {
+      await axios.post('http://one-stop.ps/api/statistics', form, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setMessage('تمت الإضافة بنجاح! ✅');
+      setMessage('Statistic added successfully! ✅');
       setError('');
       setForm({ ...form, label: '', value: '', icon: '' });
       fetchStats();
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      setError('فشل إضافة الإحصائية');
+      setError('Failed to add statistic');
+      toast.error('Failed to add statistic');
     } finally {
       setLoading(false);
     }
@@ -62,21 +70,22 @@ const AdminStatistics = () => {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await axios.delete(`https://one-stop-company-1.onrender.com/api/statistics/${id}`, {
+      await axios.delete(`http://one-stop.ps/api/statistics/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-      setMessage('تم الحذف بنجاح! ✅');
+      setMessage('Statistic deleted successfully! ✅');
       setError('');
       fetchStats();
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      setError('فشل حذف الإحصائية');
+      setError('Failed to delete statistic');
+      toast.error('Failed to delete statistic');
     } finally {
       setLoading(false);
     }
   };
 
-  // إغلاق الشريط الجانبي عند النقر خارج نطاقه على الهواتف
+  // Close sidebar on click outside for mobile
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target) && window.innerWidth < 768) {
@@ -95,10 +104,6 @@ const AdminStatistics = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-row-reverse font-sans">
-      {/* Sidebar */}
-      
-
-      {/* Overlay for Mobile Sidebar */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-60 md:hidden z-40 transition-opacity duration-300"
@@ -106,12 +111,11 @@ const AdminStatistics = () => {
         ></div>
       )}
 
-      {/* Main Content */}
       <div className="flex-1 p-4 sm:p-6 md:p-8">
         <button
           onClick={toggleSidebar}
           className="md:hidden mb-6 text-gray-700 focus:outline-none p-3 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
-          aria-label="فتح الشريط الجانبي"
+          aria-label="Open sidebar"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -119,14 +123,14 @@ const AdminStatistics = () => {
         </button>
 
         <div className="bg-white shadow-xl p-6 sm:p-8 rounded-2xl w-full max-w-3xl mx-auto transition-all duration-300">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 tracking-tight">إدارة الإحصائيات</h2>
+          <h2 className="text-3xl font-bold mb-6 text-gray-800 tracking-tight">Manage Statistics</h2>
           {loading && (
             <div className="flex items-center justify-center gap-2 text-gray-600 mb-4">
               <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
-              <p>جار التحميل...</p>
+              <p>Loading...</p>
             </div>
           )}
           {error && (
@@ -149,14 +153,14 @@ const AdminStatistics = () => {
 
             <input
               name="label"
-              placeholder="الاسم (مثلاً: المشاريع)"
+              placeholder="Label (e.g., Projects)"
               value={form.label}
               onChange={handleChange}
               className="p-3 border border-gray-200 rounded-lg w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md"
             />
             <input
               name="value"
-              placeholder="العدد"
+              placeholder="Value"
               value={form.value}
               onChange={handleChange}
               type="number"
@@ -164,7 +168,7 @@ const AdminStatistics = () => {
             />
             <input
               name="icon"
-              placeholder="رابط الأيقونة (اختياري)"
+              placeholder="Icon URL (optional)"
               value={form.icon}
               onChange={handleChange}
               className="p-3 border border-gray-200 rounded-lg w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md"
@@ -180,10 +184,10 @@ const AdminStatistics = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                   </svg>
-                  <span>جار الإضافة...</span>
+                  <span>Adding...</span>
                 </div>
               ) : (
-                'إضافة'
+                'Add'
               )}
             </button>
           </div>
@@ -192,7 +196,7 @@ const AdminStatistics = () => {
 
           <ul className="space-y-4">
             {stats.length === 0 && !error && !loading ? (
-              <p className="text-gray-600 text-center">لا توجد إحصائيات متاحة حاليًا</p>
+              <p className="text-gray-600 text-center">No statistics available</p>
             ) : (
               stats.map((stat) => (
                 <li
@@ -215,7 +219,7 @@ const AdminStatistics = () => {
                     className="text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
                     disabled={loading}
                   >
-                    🗑 حذف
+                    🗑 Delete
                   </button>
                 </li>
               ))

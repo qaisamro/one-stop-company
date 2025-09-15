@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE_URL = 'https://one-stop-company-1.onrender.com/api';
+const API_BASE_URL = 'http://one-stop.ps/api';
 
 const CompanyMotto = () => {
     const { t, i18n } = useTranslation();
@@ -48,7 +48,7 @@ const CompanyMotto = () => {
             setCurrentMottoIndex((prevIndex) =>
                 prevIndex === mottoList.length - 1 ? 0 : prevIndex + 1
             );
-        }, 5000); // Change every 5 seconds
+        }, 8000); // Change every 5 seconds
 
         return () => clearInterval(interval);
     }, [mottoList.length]);

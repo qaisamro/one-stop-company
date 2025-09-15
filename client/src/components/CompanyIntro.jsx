@@ -1,22 +1,20 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import axios from 'axios';
-import Slider from 'react-slick'; // Re-import Slider
+import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE_URL = 'https://one-stop-company-1.onrender.com/api';
+const API_BASE_URL = 'http://one-stop.ps/api';
 
 const CompanyIntro = () => {
     const { t, i18n } = useTranslation();
-    const sliderRef = useRef(null); // Keep sliderRef
+    const sliderRef = useRef(null);
     const [intro, setIntro] = useState({ title: '', description: [], images: [] });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [currentDescriptionIndex, setCurrentDescriptionIndex] = useState(0);
-    // isPaused and setIsPaused are removed as per request
-    // const [isPaused, setIsPaused] = useState(false);
 
     const { isArabic, textAlignmentClass } = useMemo(() => {
         const arabic = i18n.language === 'ar';
@@ -36,7 +34,7 @@ const CompanyIntro = () => {
                 description: Array.isArray(response.data.description) ? response.data.description : [],
                 images: Array.isArray(response.data.images) ? response.data.images : [],
             });
-            setCurrentDescriptionIndex(0); // Reset index on new data
+            setCurrentDescriptionIndex(0);
         } catch (err) {
             console.error('Failed to fetch company introduction:', err);
             setError(t('failed_to_load_company_intro', 'Failed to load company introduction.'));
@@ -49,19 +47,17 @@ const CompanyIntro = () => {
         fetchCompanyIntro();
     }, [fetchCompanyIntro]);
 
-    // Cycle through descriptions (always active, no pause mechanism)
     useEffect(() => {
-        // Only cycle if there's more than one description
         if (intro.description.length <= 1) return;
 
         const interval = setInterval(() => {
             setCurrentDescriptionIndex((prevIndex) =>
                 prevIndex === intro.description.length - 1 ? 0 : prevIndex + 1
             );
-        }, 5000); // Change every 5 seconds
+        }, 8000);
 
         return () => clearInterval(interval);
-    }, [intro.description.length]); // Depend only on length
+    }, [intro.description.length]);
 
     const sliderSettings = useMemo(
         () => ({
@@ -70,10 +66,10 @@ const CompanyIntro = () => {
             speed: 1000,
             slidesToShow: 1,
             slidesToScroll: 1,
-            autoplay: true, // Always autoplay
-            autoplaySpeed: 5000,
+            autoplay: true,
+            autoplaySpeed: 8000,
             arrows: false,
-            pauseOnHover: false, // Do not pause on hover for slider either if description isn't pausing
+            pauseOnHover: false,
             fade: true,
             cssEase: 'ease-in-out',
             appendDots: (dots) => (
@@ -113,7 +109,7 @@ const CompanyIntro = () => {
                 },
             ],
         }),
-        [t] // No dependency on isPaused now
+        [t]
     );
 
     const sliderCustomCss = useMemo(
@@ -145,11 +141,10 @@ const CompanyIntro = () => {
 
     const defaultPlaceholderImage = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1500&q=80';
 
-    // Animation variants for description
     const descriptionVariants = {
         initial: {
             opacity: 0,
-            y: isArabic ? -20 : 20, // Start slightly up if Arabic (RTL), slightly down if LTR
+            y: isArabic ? -20 : 20,
             scale: 0.98,
         },
         animate: {
@@ -158,12 +153,12 @@ const CompanyIntro = () => {
             scale: 1,
             transition: {
                 duration: 0.7,
-                ease: [0.2, 0.8, 0.2, 1], // Custom ease for a smooth, slightly bouncy effect
+                ease: [0.2, 0.8, 0.2, 1],
             },
         },
         exit: {
             opacity: 0,
-            y: isArabic ? 20 : -20, // Exit slightly down if Arabic, slightly up if LTR
+            y: isArabic ? 20 : -20,
             scale: 0.98,
             transition: {
                 duration: 0.4,
@@ -176,7 +171,6 @@ const CompanyIntro = () => {
         <section
             id="company-intro"
             className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-[#003366]"
-            // Removed onMouseEnter, onMouseLeave, onFocus, onBlur
             tabIndex={0}
             aria-label={t('company_introduction_section', 'Company Introduction Section')}
         >
@@ -217,12 +211,14 @@ const CompanyIntro = () => {
                 <div className="absolute inset-0 z-0">
                     <Slider ref={sliderRef} {...sliderSettings}>
                         {intro.images.map((image, index) => (
-                            <div key={image || index} className="w-full h-screen"> {/* Use image URL as key for better uniqueness */}
+                            <div key={image || index} className="w-full h-screen">
+                                {/* هنا، image ستكون المسار الكامل والصحيح القادم من Laravel */}
                                 <img
-                                    src={image}
-                                    alt={t('company_image_alt', { index: index + 1 }, `Company Image ${index + 1}`)}
+                                    src={image} // استخدام `image` مباشرة بدون أي تعديل
+                                    alt={`Company Image ${index + 1}`}
                                     className="w-full h-full object-cover animate-image-fade"
-                                    loading="lazy"
+                                          loading="lazy"
+
                                 />
                             </div>
                         ))}
@@ -246,7 +242,7 @@ const CompanyIntro = () => {
             >
                 <div
                     className={`max-w-4xl mx-auto text-center transform transition-all duration-500 ease-out relative`}
-                    style={{ paddingBottom: '2rem' }} // Adjusted padding since pause button is removed
+                    style={{ paddingBottom: '2rem' }}
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-4 sm:mb-6 leading-tight">
                         {intro.title || t('company_intro_title', 'QUALITY CONSTRUCTION. HONEST SERVICE. GREAT VALUE.')}
@@ -284,27 +280,25 @@ const CompanyIntro = () => {
                         <AnimatePresence mode="wait">
                             {intro.description.length > 0 ? (
                                 <motion.p
-                                    key={currentDescriptionIndex} // THIS IS CRUCIAL FOR ANIMATEPRESENCE
+                                    key={currentDescriptionIndex}
                                     variants={descriptionVariants}
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
                                     className={`text-white text-base xs:text-lg sm:text-xl md:text-2xl leading-relaxed mb-6 sm:mb-8 font-semibold ${textAlignmentClass} bg-[#003366]/60 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 backdrop-blur-sm`}
                                     aria-live="polite"
-                                    // Removed onClick, role, tabIndex, onKeyDown
                                 >
                                     {intro.description[currentDescriptionIndex]}
                                 </motion.p>
                             ) : (
                                 <motion.p
-                                    key="no-description" // Unique key for the placeholder
+                                    key="no-description"
                                     variants={descriptionVariants}
                                     initial="initial"
                                     animate="animate"
                                     exit="exit"
                                     className={`text-white text-base xs:text-lg sm:text-xl md:text-2xl leading-relaxed mb-6 sm:mb-8 font-semibold ${textAlignmentClass} bg-[#003366]/60 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 backdrop-blur-sm`}
                                     aria-live="polite"
-                                    // Removed onClick, role, tabIndex, onKeyDown
                                 >
                                     {t('no_company_description', 'Our diverse portfolio represents decades of construction experience backed by a passion for quality, outstanding client service and the latest industry.')}
                                 </motion.p>
@@ -312,20 +306,18 @@ const CompanyIntro = () => {
                         </AnimatePresence>
                     )}
 
-                    {/* Removed Pause/Play Button for Description */}
-
                     <div className="flex flex-col xs:flex-row justify-center gap-4 mt-8">
                         <a
                             href="#services"
                             className={`inline-flex items-center justify-center bg-[#FFDD33] text-[#003366] px-8 py-3 rounded-full text-base font-bold
-                                         hover:bg-[#218A7A] hover:text-white transition-all duration-300 ease-in-out
-                                         shadow-lg hover:shadow-xl z-30
-                                         w-full xs:w-auto sm:px-10 sm:py-4 sm:text-lg`}
+                                            hover:bg-[#218A7A] hover:text-white transition-all duration-300 ease-in-out
+                                            shadow-lg hover:shadow-xl z-30
+                                            w-full xs:w-auto sm:px-10 sm:py-4 sm:text-lg`}
                             aria-label={t('our_services_button', 'Our Services')}
                         >
                             {t('our_services', 'OUR SERVICES')}
                             <svg
-                                className={`w-5 h-5 ${isArabic ? 'mr-2 rotate-180' : 'ml-2'}`} // Rotate arrow for Arabic
+                                className={`w-5 h-5 ${isArabic ? 'mr-2 rotate-180' : 'ml-2'}`}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -335,21 +327,21 @@ const CompanyIntro = () => {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     strokeWidth="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" // Standard right arrow
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
                                 />
                             </svg>
                         </a>
                         <a
                             href="#about"
                             className={`inline-flex items-center justify-center bg-white text-[#003366] px-8 py-3 rounded-full text-base font-bold
-                                         hover:bg-[#218A7A] hover:text-white transition-all duration-300 ease-in-out
-                                         shadow-lg hover:shadow-xl z-30
-                                         w-full xs:w-auto sm:px-10 sm:py-4 sm:text-lg`}
+                                            hover:bg-[#218A7A] hover:text-white transition-all duration-300 ease-in-out
+                                            shadow-lg hover:shadow-xl z-30
+                                            w-full xs:w-auto sm:px-10 sm:py-4 sm:text-lg`}
                             aria-label={t('about_us_button', 'About Us')}
                         >
                             {t('about_us', 'ABOUT US')}
                             <svg
-                                className={`w-5 h-5 ${isArabic ? 'mr-2 rotate-180' : 'ml-2'}`} // Rotate arrow for Arabic
+                                className={`w-5 h-5 ${isArabic ? 'mr-2 rotate-180' : 'ml-2'}`}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -359,7 +351,7 @@ const CompanyIntro = () => {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     strokeWidth="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" // Standard right arrow
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
                                 />
                             </svg>
                         </a>

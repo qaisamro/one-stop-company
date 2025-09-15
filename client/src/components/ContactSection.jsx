@@ -46,10 +46,10 @@ const ContactSection = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post('https://one-stop-company-1.onrender.com/api/contacts', form);
+      await axios.post('https://one-stop.ps/api/contacts', form);
       setSent(true);
       setForm({ name: '', email: '', message: '' });
-      setTimeout(() => setSent(false), 5000);
+      setTimeout(() => setSent(false), 8000);
     } catch (err) {
       console.error("Error sending message:", err);
       setError(t('send_message_failed') || 'Failed to send message. Please try again.');
@@ -93,9 +93,9 @@ const ContactSection = () => {
             <h2 className={`text-4xl lg:text-5xl font-extrabold mb-6 leading-tight`} style={{ color: colors.darkBlue }}> {/* Dark Blue Title */}
               {t('get_in_touch_title') || 'Get In Touch With Us'}
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+            {/* <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
               {t('contact_description') || 'If you need to repair or replace your Plumbing system, call today and talk to one of our Plumbing specialists.'}
-            </p>
+            </p> */}
 
             <div className="space-y-4">
               <div>

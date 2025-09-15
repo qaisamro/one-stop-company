@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -8,6 +7,10 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
+import {axiosInstance} from '../api/axiosConfig'; // استبدل axios بـ axiosInstance
+
+// رابط القاعدة الأساسي
+const BASE_URL = 'https://one-stop.ps';
 
 const BlogsSection = () => {
   const { t, i18n } = useTranslation();
@@ -29,10 +32,19 @@ const BlogsSection = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(`https://one-stop-company-1.onrender.com/api/blogs?lang=${i18n.language}`);
-        setBlogs(response.data);
+        const response = await axiosInstance.get(`/api/blogs?lang=${i18n.language}`);
+        // تحويل مسارات الصور إلى URLs كاملة
+        const updatedBlogs = response.data.map((blog) => ({
+          ...blog,
+          image: blog.image ? `${BASE_URL}${blog.image}` : null,
+          additional_images: blog.additional_images
+            ? blog.additional_images.map((img) => `${BASE_URL}${img}`)
+            : [],
+        }));
+        console.log('Fetched blogs:', updatedBlogs); // تسجيل للتحقق
+        setBlogs(updatedBlogs);
       } catch (err) {
-        console.error('Error fetching blogs:', err);
+        console.error('Error fetching blogs:', err.response ? err.response.data : err);
         setError(t('error_loading_blogs') || 'Failed to load blogs');
       } finally {
         setLoading(false);
@@ -48,7 +60,8 @@ const BlogsSection = () => {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <h2
-          className={`text-4xl md:text-5xl font-extrabold text-gray-800 dark:text-white mb-10 md:mb-16 text-center tracking-tight leading-tight opacity-0 translate-y-4 animate-fade-in-up`}
+          className={`text-4xl md:text-5xl font-extrabold mb-10 md:mb-16 text-center tracking-tight leading-tight opacity-0 translate-y-4 animate-fade-in-up`}
+          style={{ color: 'rgb(0, 51, 102)' }}
         >
           {t('blogs_news_title') || 'Blogs & News'}
         </h2>
@@ -83,7 +96,7 @@ const BlogsSection = () => {
               slidesPerView={1}
               loop={true}
               autoplay={{
-                delay: 5000,
+                delay: 8000,
                 disableOnInteraction: false,
               }}
               navigation={{
@@ -112,6 +125,10 @@ const BlogsSection = () => {
                           src={blog.image}
                           alt={blog.title}
                           className="w-full h-full object-cover object-center transform transition-transform duration-500 ease-in-out group-hover:scale-105 rounded-t-2xl"
+                          onError={(e) => {
+                            e.target.src = '/placeholder-image.jpg'; // صورة احتياطية
+                            console.error('Failed to load blog image:', blog.image);
+                          }}
                         />
                         <div
                           className={`absolute top-0 px-4 py-2 text-white font-bold text-center ${
@@ -127,9 +144,9 @@ const BlogsSection = () => {
                       </div>
                     )}
                     <div className="p-6 md:p-7 pt-3 flex flex-col flex-grow">
-                      <p className={`text-sm text-gray-500 dark:text-gray-400 mb-2 ${isArabic ? 'text-right' : 'text-left'}`}>
+                      {/* <p className={`text-sm text-gray-500 dark:text-gray-400 mb-2 ${isArabic ? 'text-right' : 'text-left'}`}>
                         {blog.author || t('by_admin') || 'By Admin'} • {blog.category || 'Construction'}
-                      </p>
+                      </p> */}
                       <h3
                         className={`text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2 leading-tight line-clamp-2 ${
                           isArabic ? 'text-right' : 'text-left'

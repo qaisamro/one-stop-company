@@ -31,7 +31,7 @@ const AboutDetails = () => {
 
     // Fetch only the data needed for features
     axios
-      .get(`https://one-stop-company-1.onrender.com/api/about?lang=${i18n.language}`)
+      .get(`https://one-stop.ps/api/about?lang=${i18n.language}`)
       .then((res) => {
         setFeatures(res.data.features || []);
         setIsLoading(false);

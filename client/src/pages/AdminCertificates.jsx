@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { axiosInstance } from '../api/axiosConfig';
 
 const AdminCertificates = () => {
   const [certificates, setCertificates] = useState([]);
-  const [form, setForm] = useState({ title: '', issuer: '', year: '', link: '', image: null, language: 'ar' });
+  const [form, setForm] = useState({ title: '', issuer: '', year: '', link: '', image: null, language: 'ar', currentImage: '' });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
   const navigate = useNavigate();
-
-  const [editingCertId, setEditingCertId] = useState(null); // State to hold the ID of the certificate being edited
+  const [editingCertId, setEditingCertId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -26,13 +25,13 @@ const AdminCertificates = () => {
   const fetchCertificates = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://one-stop-company-1.onrender.com/api/certificates?lang=${form.language}`, {
+      const response = await axiosInstance.get(`/api/certificates?lang=${form.language}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setCertificates(response.data);
       setError('');
     } catch (err) {
-      setError('فشل تحميل الشهادات');
+      setError('فشل تحميل الشهادات: ' + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -43,7 +42,7 @@ const AdminCertificates = () => {
   };
 
   const handleFileChange = (e) => {
-    setForm({ ...form, image: e.target.files[0] });
+    setForm({ ...form, image: e.target.files[0], currentImage: '' });
   };
 
   const handleAdd = async () => {
@@ -64,7 +63,7 @@ const AdminCertificates = () => {
     formData.append('language', form.language);
 
     try {
-      await axios.post('https://one-stop-company-1.onrender.com/api/certificates', formData, {
+      await axiosInstance.post('/api/certificates', formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
@@ -72,12 +71,15 @@ const AdminCertificates = () => {
       });
       setMessage('تمت الإضافة بنجاح! ✅');
       setError('');
-      setForm({ title: '', issuer: '', year: '', link: '', image: null, language: form.language });
+      setForm({ title: '', issuer: '', year: '', link: '', image: null, language: form.language, currentImage: '' });
       fetchCertificates();
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      console.error('Error adding certificate:', err);
-      setError(err.response?.data?.error || 'فشل إضافة الشهادة');
+      console.error('Error adding certificate:', err); // Keep this general error log
+      const errorMsg = err.response?.data?.errors
+        ? Object.values(err.response.data.errors).flat().join(', ')
+        : err.response?.data?.error || 'فشل إضافة الشهادة';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -85,21 +87,20 @@ const AdminCertificates = () => {
 
   const handleEdit = (cert) => {
     setEditingCertId(cert.id);
-    // When setting form for editing, set image to null if it's a URL, as it expects a File object for new upload
-    // Or you can store the existing image URL in a separate state if you want to display it
     setForm({
       title: cert.title,
       issuer: cert.issuer,
-      year: cert.year || '', // Handle null year
-      link: cert.link || '', // Handle null link
-      image: null, // Image will be handled by re-upload
-      language: cert.language
+      year: cert.year || '',
+      link: cert.link || '',
+      image: null,
+      language: cert.language || 'ar', // Ensure language is set
+      currentImage: cert.photo_url || '',
     });
   };
 
   const handleUpdate = async () => {
-    if (!form.title || !form.issuer) {
-      setError('يرجى ملء جميع الحقول المطلوبة (العنوان والجهة المانحة).');
+    if (!form.title || !form.issuer || !form.language) {
+      setError('يرجى ملء جميع الحقول المطلوبة (العنوان، الجهة المانحة، واللغة).');
       return;
     }
     setLoading(true);
@@ -107,15 +108,16 @@ const AdminCertificates = () => {
     setMessage('');
 
     const formData = new FormData();
+    formData.append('_method', 'PUT');
     formData.append('title', form.title);
     formData.append('issuer', form.issuer);
     if (form.year) formData.append('year', form.year);
     if (form.link) formData.append('link', form.link);
-    if (form.image) formData.append('image', form.image); // Only append if a new image is selected
+    if (form.image) formData.append('image', form.image);
     formData.append('language', form.language);
 
     try {
-      await axios.put(`https://one-stop-company-1.onrender.com/api/certificates/${editingCertId}`, formData, {
+      await axiosInstance.post(`/api/certificates/${editingCertId}`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
@@ -123,13 +125,16 @@ const AdminCertificates = () => {
       });
       setMessage('تم التحديث بنجاح! ✅');
       setError('');
-      setForm({ title: '', issuer: '', year: '', link: '', image: null, language: form.language });
-      setEditingCertId(null); // Clear editing state
+      setForm({ title: '', issuer: '', year: '', link: '', image: null, language: form.language, currentImage: '' });
+      setEditingCertId(null);
       fetchCertificates();
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      console.error('Error updating certificate:', err);
-      setError(err.response?.data?.error || 'فشل تحديث الشهادة');
+      console.error('Error updating certificate:', err); // Keep this general error log
+      const errorMsg = err.response?.data?.errors
+        ? Object.values(err.response.data.errors).flat().join(', ')
+        : err.response?.data?.error || 'فشل تحديث الشهادة';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -140,7 +145,7 @@ const AdminCertificates = () => {
     setError('');
     setMessage('');
     try {
-      await axios.delete(`https://one-stop-company-1.onrender.com/api/certificates/${id}`, {
+      await axiosInstance.delete(`/api/certificates/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       setMessage('تم الحذف بنجاح! ✅');
@@ -148,8 +153,9 @@ const AdminCertificates = () => {
       fetchCertificates();
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
-      console.error('Error deleting certificate:', err);
-      setError(err.response?.data?.error || 'فشل حذف الشهادة');
+      console.error('Error deleting certificate:', err); // Keep this general error log
+      const errorMsg = err.response?.data?.error || 'فشل حذف الشهادة';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -173,7 +179,6 @@ const AdminCertificates = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex font-sans">
-
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-60 md:hidden z-40 transition-opacity duration-300"
@@ -268,14 +273,18 @@ const AdminCertificates = () => {
                 />
               </div>
             )}
-            {/* Display current image if in edit mode and no new image is selected */}
-            {editingCertId && !form.image && (
+            {editingCertId && form.currentImage && !form.image && (
               <div className="mt-2 text-center">
                 <p className="text-gray-600">الصورة الحالية:</p>
                 <img
-                  src={certificates.find(c => c.id === editingCertId)?.image}
+                  src={form.currentImage}
                   alt="الصورة الحالية"
                   className="w-32 h-32 object-contain mx-auto rounded"
+                  onError={(e) => {
+                    e.target.src = '/images/placeholder.jpg';
+                    // REMOVED: console.warn(`Failed to load current image: ${form.currentImage}`);
+                    // The placeholder is set, no need to log the same error repeatedly.
+                  }}
                 />
               </div>
             )}
@@ -321,7 +330,7 @@ const AdminCertificates = () => {
               <button
                 onClick={() => {
                   setEditingCertId(null);
-                  setForm({ title: '', issuer: '', year: '', link: '', image: null, language: form.language }); // Clear form
+                  setForm({ title: '', issuer: '', year: '', link: '', image: null, language: form.language, currentImage: '' });
                   setError('');
                   setMessage('');
                 }}
@@ -347,18 +356,23 @@ const AdminCertificates = () => {
                     <h3 className="text-lg font-semibold text-gray-800">{cert.title}</h3>
                     <p className="text-gray-700 text-sm">الجهة: {cert.issuer}</p>
                     {cert.year && <p className="text-gray-600 text-xs">السنة: {cert.year}</p>}
-                    {cert.image && (
+                    {cert.photo_url && (
                       <img
-                        src={cert.image}
+                        src={cert.photo_url}
                         alt={`${cert.title} photo`}
                         className="w-24 mt-2 rounded"
+                        onError={(e) => {
+                          e.target.src = '/images/placeholder.jpg';
+                          // REMOVED: console.warn(`Failed to load image for ${cert.title}: ${cert.photo_url}`);
+                          // The placeholder is set, no need to log the same error repeatedly.
+                        }}
                       />
                     )}
                     {cert.link && (
-                      <a 
-                        href={cert.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
+                      <a
+                        href={cert.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-blue-500 hover:underline text-sm mt-2 block"
                       >
                         عرض الرابط

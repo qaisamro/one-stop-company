@@ -1,0 +1,18 @@
+/* src/components/Gallery.css */
+
+.my-masonry-grid {
+    display: -webkit-box; /* Chrome, Safari, Opera */
+    display: -ms-flexbox; /* IE 10+ */
+    display: flex;
+    margin-left: -1rem; /* المساحة بين الأعمدة (16px) */
+    width: auto;
+}
+.my-masonry-grid_column {
+    padding-left: 1rem; /* المساحة بين الأعمدة (16px) */
+    background-clip: padding-box;
+}
+
+/* التأكد من وجود مسافة بين العناصر داخل كل عمود */
+.my-masonry-grid_column > .my-masonry-item {
+    margin-bottom: 1rem; /* المساحة بين الصور (16px) */
+}

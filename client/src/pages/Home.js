@@ -10,7 +10,8 @@ import ContactSection from '../components/ContactSection';
 import Projects from '../components/Projects';
 import WhyChooseUs from '../components/WhyChooseUs';
 import OurStory from '../components/OurStory';
-import CompanyMotto from '../components/CompanyMotto'; // <--- تحديث اسم الاستيراد
+import CompanyMotto from '../components/CompanyMotto';
+import CSRSection from '../components/CSRPage'; // <--- استيراد مكون CSR الجديد
 
 const Home = ({ setActiveSection }) => {
   const location = useLocation();
@@ -68,8 +69,7 @@ const Home = ({ setActiveSection }) => {
         <OurStory />
       </section>
 
-      {/* إضافة شريط العبارات المتحركة هنا كفاصل بصري */}
-      <div className="my-4 md:my-8 -mt-2 -mb-2"> {/* Negative margins to create overlap/closer spacing */}
+      <div className="my-4 md:my-8 -mt-2 -mb-2">
         <CompanyMotto />
       </div>
 
@@ -85,9 +85,16 @@ const Home = ({ setActiveSection }) => {
       <section id="certificates" className="bg-white shadow-xl rounded-2xl">
         <CertificatesSection />
       </section>
-       <div className="my-4 md:my-8 -mt-2 -mb-2"> {/* Negative margins to create overlap/closer spacing */}
+
+      <div className="my-4 md:my-8 -mt-2 -mb-2">
         <CompanyMotto />
       </div>
+      
+      {/* قسم المسؤولية المجتمعية (CSR) الجديد */}
+      <section id="csr" className="bg-white shadow-xl rounded-2xl">
+        <CSRSection />
+      </section>
+
       <section id="why-choose-us" className="bg-white shadow-xl rounded-2xl">
         <WhyChooseUs />
       </section>

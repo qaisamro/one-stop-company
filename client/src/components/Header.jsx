@@ -24,6 +24,7 @@ const Header = ({ activeSection, setActiveSection }) => {
         { id: 3, label: 'الخدمات', href: '#services', language: 'ar', isSection: 1 },
         { id: 4, label: 'الفريق', href: '#team', language: 'ar', isSection: 1 },
         { id: 6, label: 'الأخبار', href: '#blogs', language: 'ar', isSection: 1 },
+        { id: 15, label: 'المسؤولية المجتمعية', href: '#csr', language: 'ar', isSection: 1 },
         { id: 7, label: 'تواصل معنا', href: '#contact', language: 'ar', isSection: 1 },
         { id: 18, label: 'Home', href: '/', language: 'en', isSection: 0 },
         { id: 8, label: 'About Us', href: '#about', language: 'en', isSection: 1 },
@@ -31,11 +32,13 @@ const Header = ({ activeSection, setActiveSection }) => {
         { id: 10, label: 'Services', href: '#services', language: 'en', isSection: 1 },
         { id: 11, label: 'Team', href: '#team', language: 'en', isSection: 1 },
         { id: 13, label: 'Blogs', href: '#blogs', language: 'en', isSection: 1 },
+        { id: 16, label: 'CSR', href: '#csr', language: 'en', isSection: 1 },
         { id: 14, label: 'Contact Us', href: '#contact', language: 'en', isSection: 1 },
     ];
 
     const allLinksDesktop = [
         { id: 7, label: 'تواصل معنا', href: '#contact', language: 'ar', isSection: 1 },
+        { id: 15, label: 'المسؤولية المجتمعية', href: '#csr', language: 'ar', isSection: 1 },
         { id: 6, label: 'الأخبار', href: '#blogs', language: 'ar', isSection: 1 },
         { id: 5, label: 'المشاريع', href: '#projects', language: 'ar', isSection: 1 },
         { id: 4, label: 'الفريق', href: '#team', language: 'ar', isSection: 1 },
@@ -48,6 +51,7 @@ const Header = ({ activeSection, setActiveSection }) => {
         { id: 11, label: 'Team', href: '#team', language: 'en', isSection: 1 },
         { id: 12, label: 'Projects', href: '#projects', language: 'en', isSection: 1 },
         { id: 13, label: 'Blogs', href: '#blogs', language: 'en', isSection: 1 },
+        { id: 16, label: 'CSR', href: '#csr', language: 'en', isSection: 1 },
         { id: 14, label: 'Contact Us', href: '#contact', language: 'en', isSection: 1 },
     ];
 
@@ -144,6 +148,7 @@ const Header = ({ activeSection, setActiveSection }) => {
         const team = englishLinks.find(link => link.href === '#team');
         const projects = englishLinks.find(link => link.href === '#projects');
         const blogs = englishLinks.find(link => link.href === '#blogs');
+        const csr = englishLinks.find(link => link.href === '#csr');
         const contactUs = englishLinks.find(link => link.href === '#contact');
 
         // Assign links to left and right for English
@@ -151,12 +156,13 @@ const Header = ({ activeSection, setActiveSection }) => {
             home,
             aboutUs,
             services,
-            team, // Team is explicitly placed on the left
+            team,
         ].filter(Boolean); // Filter out any undefined if a link isn't found
 
         rightLinks = [
             projects,
             blogs,
+            csr,
             contactUs,
         ].filter(Boolean); // Filter out any undefined if a link isn't found
     }
@@ -234,7 +240,7 @@ const Header = ({ activeSection, setActiveSection }) => {
                                     ONE<span className="text-it-yellow">STOP</span>
                                 </h1>
                                 {/* Added: CONSTRUCTION & SERVICES under company name for mobile */}
-                                <span className="text-white text-xs font-semibold tracking-wide mt-[-5px]" style={{ color: itColors.turquoise }}>
+                                <span className="text-white text-xs font-semibold tracking-wide mt-[-5px]" style={{ color: itColors.white }}>
                                     CONSTRUCTION & SERVICES
                                 </span>
                             </Link>
@@ -244,13 +250,13 @@ const Header = ({ activeSection, setActiveSection }) => {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center justify-center w-full">
                         <nav
-                            className={`flex-1 flex ${isArabic ? 'justify-start pl-6' : 'justify-start pl-6'} items-center space-x-6 lg:space-x-8 xl:space-x-10 ${isArabic ? 'rtl:space-x-reverse' : ''}`}
+                            className={`flex-1 flex ${isArabic ? 'justify-start pl-6' : 'justify-start pl-6'} items-center space-x-4 lg:space-x-6 xl:space-x-8 ${isArabic ? 'rtl:space-x-reverse' : ''}`}
                         >
                             {leftLinks.map((link) => (
                                 <Link
                                     key={link.id}
                                     to={getLinkTo(link.href)}
-                                    className={`relative group uppercase text-lg font-semibold py-2 whitespace-nowrap tracking-wider
+                                    className={`relative group uppercase text-base font-semibold py-2 whitespace-nowrap tracking-wider
                                         ${isLinkActive(link.href) ? 'text-it-yellow' : 'text-gray-200 hover:text-white'}
                                         transition duration-300`}
                                 >
@@ -284,20 +290,20 @@ const Header = ({ activeSection, setActiveSection }) => {
                                     <span className="block h-0.5 bg-it-yellow mx-auto mt-1" style={{ width: '80%' }}></span>
                                 </h1>
                                 {/* Added: CONSTRUCTION & SERVICES under company name for desktop */}
-                                <span className="text-white text-sm font-semibold tracking-wide mt-1" style={{ color: itColors.turquoise }}>
+                                <span className="text-white text-sm font-semibold tracking-wide mt-1" style={{ color: itColors.white }}>
                                     CONSTRUCTION & SERVICES
                                 </span>
                             </Link>
                         </div>
 
                         <nav
-                            className={`flex-1 flex ${isArabic ? 'justify-end pr-6' : 'justify-end pr-6'} items-center space-x-6 lg:space-x-8 xl:space-x-10 ${isArabic ? 'rtl:space-x-reverse' : ''}`}
+                            className={`flex-1 flex ${isArabic ? 'justify-end pr-6' : 'justify-end pr-6'} items-center space-x-4 lg:space-x-6 xl:space-x-8 ${isArabic ? 'rtl:space-x-reverse' : ''}`}
                         >
                             {rightLinks.map((link) => (
                                 <Link
                                     key={link.id}
                                     to={getLinkTo(link.href)}
-                                    className={`relative group uppercase text-lg font-semibold py-2 whitespace-nowrap tracking-wider
+                                    className={`relative group uppercase text-base font-semibold py-2 whitespace-nowrap tracking-wider
                                         ${isLinkActive(link.href) ? 'text-it-yellow' : 'text-gray-200 hover:text-white'}
                                         transition duration-300`}
                                 >
@@ -426,6 +432,11 @@ const Header = ({ activeSection, setActiveSection }) => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
                             )}
+                            {link.href === '#csr' && (
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.405 9.429 5 8 5a2 2 0 00-2 2v6l-2 2h2v4.253a2 2 0 012 2v-.253M12 6.253C13.168 5.405 14.571 5 16 5a2 2 0 012 2v6l2 2h-2v4.253a2 2 0 002 2v-.253"></path>
+                                </svg>
+                            )}
                             {link.label}
                         </Link>
                     ))}
@@ -434,7 +445,7 @@ const Header = ({ activeSection, setActiveSection }) => {
                 <div className="mt-auto pt-6 border-t border-gray-700/50">
                     <button
                         onClick={toggleLang}
-                        className="w-full text-lg px-6 py-3 rounded-full transition-all duration-300 font-bold tracking-wider flex items-center justify-center gap-2"
+                        className="w-full text-base px-6 py-3 rounded-full transition-all duration-300 font-bold tracking-wider flex items-center justify-center gap-2"
                         style={{
                             backgroundColor: itColors.yellow,
                             color: itColors.darkBlue,

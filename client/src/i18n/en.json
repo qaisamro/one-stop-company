@@ -1,6 +1,6 @@
 {
   "about_us": "About Us",
-  "years_of_experience": "Years of Experience",
+  "years_of_experience": "At One Stop, we provide tailored contracting solutions that align with your vision, timeline, and quality standards. We manage every stage with precision and care to ensure a smooth, worry-free experience.",
   "projects": "Projects",
   "contact_us": "Contact Us",
   "mission": "Our Mission",
@@ -38,6 +38,8 @@
   "your_message": "Your Message",
   "name_placeholder": "Enter your full name",
   "email_placeholder": "Enter your email address",
+    "loading_csr": "Loading CSR",
+
   "message_placeholder": "Type your message here...",
   "send_message_button": "Send Message",
   "sending_message": "Sending...",
@@ -68,12 +70,12 @@
   "contact_description": "If you need to repair or replace your Plumbing system, call today and talk to one of our Plumbing specialists.",
   "call_support_center": "Call support center 24/7",
   "address_label": "37 San Juan Lane",
-  "full_address": "Palestine - Hebron - Dura",
+  "full_address": "Palestine - Hebron - Dura - Banks Street",
   "write_to_us": "Write to us",
   "email_address": "Themesflat@gmail.com",
   "accept_terms": "Accept terms and conditions from Graviton.",
   "agree_terms_error": "You must agree to the terms and conditions.",
-  "service_main_title": "We provide excellent service to our clients",
+  "service_main_title": "One Stop Services",
   "loading_projects": "Loading projects...",
   "error_loading_projects": "Failed to load projects",
   "no_projects_available": "No projects are available at the moment",
@@ -83,21 +85,21 @@
   "no_services_available": "No services are available",
   "default_why_choose_us_title": "Why Choose Us",
   "no_features_for_tab": "No features to display for this tab currently",
-  "projects_main_title":"Our Projects Reflect Our Commitment to Quality and Innovation",
-   "call_us": "Call Us",
+  "projects_main_title": "Our Projects Reflect Our Commitment to Quality and Innovation",
+  "call_us": "Call Us",
   "email_us": "Email Us",
   "our_location": "Our Location",
-    "view_on_map": "View on Map",
-    "services": "services",
-    "our_services": "our services",
-      "our_Philosophy": "Our Philosophy & Commitment",
+  "view_on_map": "View on Map",
+  "services": "services",
+  "our_services": "our services",
+  "our_Philosophy": "Our Philosophy & Commitment",
   "back_to_home": "Back to Home",
-   "back_to_blogs": "Back to Blogs",
+  "back_to_blogs": "Back to Blogs",
   "additional_images": "Additional Images",
-   "project_details": "Project Details",
+  "project_details": "Project Details",
   "project_sections": "Project Sections",
   "visit_project": "Visit Project",
-   "member_name": "Member Name",
+  "member_name": "Member Name",
   "member_position": "Position",
   "social_media_links": "Social Media Links",
   "social_url": "Social URL",
@@ -109,6 +111,19 @@
   "cancel": "Cancel",
   "edit_member": "Edit Member",
   "delete_member": "Delete Member",
-  "add_member": "Add Member"
-
+  "add_member": "Add Member",
+  "csr": "CSR",
+  "gallery": {
+    "page_title": "Photo Gallery",
+    "description": "Explore our curated collection of images showcasing our latest projects, activities, and behind-the-scenes moments.",
+    "no_images": "No images available at the moment.",
+    "image_alt": "Gallery image {{index}}",
+    "selected_image_alt": "Enlarged image"
+  },
+  "loading": {
+    "text": "Loading..."
+  },
+  "error": {
+    "fetch": "Failed to fetch images. Please try again later."
+  }
 }

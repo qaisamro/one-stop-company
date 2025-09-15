@@ -1,36 +1,68 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import { axiosInstance } from '../api/axiosConfig'; // Updated import: use named import
 
 const AdminAbout = () => {
+  const { i18n, t } = useTranslation();
   const [formData, setFormData] = useState({
     title_small: '',
     title_main: '',
     description: '',
     image_file: null,
-    current_image_url: '',
+    current_image_url: null,
+    delete_image: false,
     experience_year: '',
     experience_text: '',
-    blocks: [],
     button_text: '',
     button_url: '',
-    features: [], // New field for features
+    blocks: [],
+    features: [],
   });
-  const [lang, setLang] = useState('en');
+  const [lang, setLang] = useState(i18n.language || 'en');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState('');
   const sidebarRef = useRef(null);
   const navigate = useNavigate();
 
+  // Unified function to handle messages (success/error)
+  const showMessage = useCallback((msg, type = 'success') => {
+    if (type === 'success') {
+      setMessage(msg);
+      setError('');
+    } else {
+      setError(msg);
+      setMessage('');
+    }
+    const timer = setTimeout(() => {
+      setMessage('');
+      setError('');
+    }, 5000); // Messages disappear after 5 seconds
+    return () => clearTimeout(timer);
+  }, []);
+
+  const checkAuth = useCallback(() => {
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+      showMessage(t('auth_token_missing', 'Authentication token missing. Please log in again.'), 'error');
+      setLoading(false);
+      navigate('/admin/login');
+      return false;
+    }
+    return token;
+  }, [navigate, t, showMessage]);
+
   const fetchContent = useCallback(async () => {
+    const token = checkAuth();
+    if (!token) return;
+
     setLoading(true);
-    setError('');
     try {
-      const response = await axios.get(`https://one-stop-company-1.onrender.com/api/about?lang=${lang}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      // Use axiosInstance for API calls
+      const response = await axiosInstance.get(`/api/about?lang=${lang}`);
 
       const data = response.data || {};
       setFormData({
@@ -38,38 +70,68 @@ const AdminAbout = () => {
         title_main: data.title_main || '',
         description: data.description || '',
         image_file: null,
-        current_image_url: data.image_url || '',
+        current_image_url: data.image_url || null,
+        delete_image: false,
         experience_year: data.experience_year || '',
         experience_text: data.experience_text || '',
-        blocks: data.blocks || [],
         button_text: data.button_text || '',
         button_url: data.button_url || '',
-        features: data.features || [], // Initialize features from fetched data
+        blocks: Array.isArray(data.blocks) ? data.blocks : [],
+        features: Array.isArray(data.features) ? data.features : [],
       });
+      setImagePreview(data.image_url || '');
     } catch (err) {
       console.error('Error fetching about content:', err);
-      setError('فشل تحميل المحتوى');
+      if (err.response?.status === 401) {
+        showMessage(t('unauthorized', 'Unauthorized access. Please log in again.'), 'error');
+        navigate('/admin/login');
+      } else {
+        showMessage(t('failed_to_load_content', 'Failed to load content: ') + (err.response?.data?.error || err.message), 'error');
+      }
     } finally {
       setLoading(false);
     }
-  }, [lang]);
+  }, [lang, navigate, t, checkAuth, showMessage]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/admin/login');
-    } else {
+    const token = checkAuth();
+    if (token) {
       fetchContent();
     }
-  }, [lang, navigate, fetchContent]);
+  }, [lang, fetchContent, checkAuth]);
+
+  useEffect(() => {
+    setLang(i18n.language || 'en');
+  }, [i18n.language]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === 'file') {
-      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+      const file = files[0];
+      setFormData((prev) => ({
+        ...prev,
+        image_file: file,
+        current_image_url: null,
+        delete_image: false,
+      }));
+      if (file) {
+        setImagePreview(URL.createObjectURL(file));
+      } else {
+        setImagePreview(formData.current_image_url || '');
+      }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleClearImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      image_file: null,
+      current_image_url: null,
+      delete_image: true,
+    }));
+    setImagePreview('');
   };
 
   const handleBlockChange = (index, e) => {
@@ -93,7 +155,6 @@ const AdminAbout = () => {
     }));
   };
 
-  // --- Features Handlers ---
   const handleFeatureChange = (index, e) => {
     const { name, value } = e.target;
     const newFeatures = [...formData.features];
@@ -114,43 +175,62 @@ const AdminAbout = () => {
       features: prev.features.filter((_, i) => i !== index),
     }));
   };
-  // --- End Features Handlers ---
 
   const saveContent = async () => {
+    const token = checkAuth();
+    if (!token) return;
+
     setLoading(true);
-    setMessage('');
-    setError('');
+    showMessage('');
 
     const data = new FormData();
     data.append('lang', lang);
-    Object.keys(formData).forEach((key) => {
-      if (key === 'image_file' && formData[key]) {
-        data.append(key, formData[key]);
-      } else if (key === 'blocks' || key === 'features') { // Ensure 'features' is stringified
-        data.append(key, JSON.stringify(formData[key]));
-      } else if (key !== 'current_image_url') {
-        data.append(key, formData[key]);
+
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === 'image_file' && value) {
+        data.append('image_file', value);
+      } else if (key === 'blocks' || key === 'features') {
+        data.append(key, JSON.stringify(value));
+      } else if (key === 'delete_image') {
+        data.append('delete_image', value ? '1' : '0');
+      } else if (key !== 'current_image_url' || (key === 'current_image_url' && value && !formData.delete_image)) {
+        data.append(key, value || '');
       }
     });
 
-    if (!formData.image_file && formData.current_image_url) {
-      data.append('current_image_url', formData.current_image_url);
-    }
+    data.append('_method', 'PUT'); // Important for Laravel to treat POST as PUT
 
     try {
-      await axios.put('https://one-stop-company-1.onrender.com/api/about', data, {
+      // Use axiosInstance for API calls
+      const response = await axiosInstance.post('/api/about', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      setMessage('تم الحفظ بنجاح! ✅');
-      setError('');
-      fetchContent(); // Re-fetch to update current_image_url if a new image was uploaded
-      setTimeout(() => setMessage(''), 3000);
+
+      showMessage(response.data.message || t('saved_successfully', '✅ Saved successfully!'));
+      setFormData((prev) => ({
+        ...prev,
+        image_file: null,
+        current_image_url: response.data.data.image_url || null,
+        delete_image: false,
+      }));
+      setImagePreview(response.data.data.image_url || '');
+      fetchContent();
     } catch (err) {
-      console.error('Error saving about content:', err);
-      setError(err.response?.data?.error || 'فشل حفظ المحتوى');
+      console.error('Error saving about content:', err.response?.data || err.message);
+      if (err.response?.status === 401) {
+        showMessage(t('unauthorized', 'Unauthorized access. Please log in again.'), 'error');
+        navigate('/admin/login');
+      } else if (err.response?.status === 422) {
+        const errors = err.response.data.errors || {};
+        const errorMessages = Object.entries(errors)
+          .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+          .join('; ');
+        showMessage(t('validation_error', 'Validation error: ') + (errorMessages || err.response?.data?.error || t('invalid_data', 'Invalid data')), 'error');
+      } else {
+        showMessage(t('failed_to_save', 'Failed to save content: ') + (err.response?.data?.error || err.message), 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -184,21 +264,21 @@ const AdminAbout = () => {
         <button
           onClick={toggleSidebar}
           className="md:hidden mb-6 text-gray-700 focus:outline-none p-3 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
-          aria-label="فتح الشريط الجانبي"
+          aria-label={t('open_sidebar', 'Open sidebar')}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
         <div className="bg-white shadow-xl p-6 sm:p-8 rounded-2xl w-full max-w-2xl mx-auto transition-all duration-300">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800 tracking-tight">تعديل قسم "من نحن"</h2>
+          <h2 className="text-3xl font-bold mb-6 text-gray-800 tracking-tight">{t('edit_about_section', 'Edit About Us Section')}</h2>
           {loading && (
             <div className="flex items-center justify-center gap-2 text-gray-600 mb-4">
               <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
-              <p>جار التحميل...</p>
+              <p>{t('loading', 'Loading...')}</p>
             </div>
           )}
           {error && (
@@ -208,11 +288,14 @@ const AdminAbout = () => {
             <p className="text-green-600 bg-green-50 p-3 rounded-lg mb-4 animate-fade-in">{message}</p>
           )}
           <div className="mb-4">
-            <label htmlFor="lang-select" className="block text-gray-700 text-sm font-bold mb-2">اللغة:</label>
+            <label htmlFor="lang-select" className="block text-gray-700 text-sm font-bold mb-2">{t('language', 'Language')}:</label>
             <select
               id="lang-select"
               value={lang}
-              onChange={(e) => setLang(e.target.value)}
+              onChange={(e) => {
+                setLang(e.target.value);
+                i18n.changeLanguage(e.target.value);
+              }}
               className="p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full bg-gray-50 text-gray-700 transition-shadow duration-200 hover:shadow-md"
             >
               <option value="en">English</option>
@@ -221,7 +304,7 @@ const AdminAbout = () => {
           </div>
           <div className="space-y-4">
             <div>
-              <label htmlFor="title_small" className="block text-gray-700 text-sm font-bold mb-2">العنوان الصغير:</label>
+              <label htmlFor="title_small" className="block text-gray-700 text-sm font-bold mb-2">{t('small_title', 'Small Title')}:</label>
               <input
                 type="text"
                 id="title_small"
@@ -232,7 +315,7 @@ const AdminAbout = () => {
               />
             </div>
             <div>
-              <label htmlFor="title_main" className="block text-gray-700 text-sm font-bold mb-2">العنوان الرئيسي:</label>
+              <label htmlFor="title_main" className="block text-gray-700 text-sm font-bold mb-2">{t('main_title', 'Main Title')}:</label>
               <input
                 type="text"
                 id="title_main"
@@ -243,7 +326,7 @@ const AdminAbout = () => {
               />
             </div>
             <div>
-              <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">الوصف:</label>
+              <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">{t('description', 'Description')}:</label>
               <textarea
                 id="description"
                 name="description"
@@ -253,25 +336,31 @@ const AdminAbout = () => {
               />
             </div>
             <div className="border border-gray-200 p-4 rounded-lg bg-gray-50">
-              <label htmlFor="image_file" className="block text-gray-700 text-sm font-bold mb-2">صورة القسم الرئيسية:</label>
-              {formData.current_image_url && (
+              <label htmlFor="image_file" className="block text-gray-700 text-sm font-bold mb-2">{t('main_section_image', 'Main Section Image')}:</label>
+              {imagePreview && (
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2">الصورة الحالية:</p>
-                  <img src={formData.current_image_url} alt="Current About" className="max-w-xs h-auto rounded-lg shadow-md" />
+                  <p className="text-sm text-gray-600 mb-2">{t('image_preview', 'Image Preview')}:</p>
+                  <img src={imagePreview} alt={t('current_about_image', 'Current About Image')} className="max-w-xs h-auto rounded-lg shadow-md" />
+                  <button
+                    onClick={handleClearImage}
+                    className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                  >
+                    {t('clear_image', 'Clear Image')}
+                  </button>
                 </div>
               )}
               <input
                 type="file"
                 id="image_file"
                 name="image_file"
-                accept="image/*"
+                accept="image/jpeg,image/jpg,image/png,image/gif"
                 onChange={handleChange}
-                className="w-full text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className="w-full text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:file:text-blue-700 hover:file:bg-blue-100"
               />
-              <p className="mt-2 text-sm text-gray-500">الحد الأقصى للحجم 5 ميجابايت (JPG, PNG, GIF)</p>
+              <p className="mt-2 text-sm text-gray-500">{t('max_file_size', 'Maximum size 5MB (JPG, PNG, GIF)')}</p>
             </div>
             <div>
-              <label htmlFor="experience_year" className="block text-gray-700 text-sm font-bold mb-2">سنة الخبرة:</label>
+              <label htmlFor="experience_year" className="block text-gray-700 text-sm font-bold mb-2">{t('experience_year', 'Experience Year')}:</label>
               <input
                 type="number"
                 id="experience_year"
@@ -282,7 +371,7 @@ const AdminAbout = () => {
               />
             </div>
             <div>
-              <label htmlFor="experience_text" className="block text-gray-700 text-sm font-bold mb-2">نص الخبرة:</label>
+              <label htmlFor="experience_text" className="block text-gray-700 text-sm font-bold mb-2">{t('experience_text', 'Experience Text')}:</label>
               <input
                 type="text"
                 id="experience_text"
@@ -293,7 +382,7 @@ const AdminAbout = () => {
               />
             </div>
             <div>
-              <label htmlFor="button_text" className="block text-gray-700 text-sm font-bold mb-2">نص زر "تعرف على المزيد":</label>
+              <label htmlFor="button_text" className="block text-gray-700 text-sm font-bold mb-2">{t('learn_more_button_text', 'Learn More Button Text')}:</label>
               <input
                 type="text"
                 id="button_text"
@@ -304,7 +393,7 @@ const AdminAbout = () => {
               />
             </div>
             <div>
-              <label htmlFor="button_url" className="block text-gray-700 text-sm font-bold mb-2">رابط زر "تعرف على المزيد":</label>
+              <label htmlFor="button_url" className="block text-gray-700 text-sm font-bold mb-2">{t('learn_more_button_url', 'Learn More Button URL')}:</label>
               <input
                 type="text"
                 id="button_url"
@@ -316,11 +405,11 @@ const AdminAbout = () => {
             </div>
           </div>
           <div className="mt-8 border-t pt-6 border-gray-200">
-            <h3 className="text-2xl font-bold mb-4 text-gray-800">إدارة كتل المحتوى ("من نحن")</h3>
+            <h3 className="text-2xl font-bold mb-4 text-gray-800">{t('manage_content_blocks', 'Manage Content Blocks ("About Us")')}</h3>
             {formData.blocks.map((block, index) => (
               <div key={index} className="bg-gray-100 p-4 rounded-lg mb-4 shadow-sm border border-gray-200">
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-lg font-semibold text-gray-700">الكتلة #{index + 1}</h4>
+                  <h4 className="text-lg font-semibold text-gray-700">{t('block', 'Block')} #{index + 1}</h4>
                   <button
                     onClick={() => removeBlock(index)}
                     className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
@@ -346,15 +435,15 @@ const AdminAbout = () => {
                     htmlFor={`block_title_${index}`}
                     className="block text-gray-700 text-sm font-bold mb-2"
                   >
-                    عنوان الكتلة:
+                    {t('block_title', 'Block Title')}:
                   </label>
                   <textarea
                     id={`block_title_${index}`}
                     name="block_title"
-                    value={block.block_title}
+                    value={block.block_title || ''}
                     onChange={(e) => handleBlockChange(index, e)}
                     className="w-full h-24 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 resize-y"
-                    placeholder="أدخل عنوان الكتلة هنا..."
+                    placeholder={t('enter_block_title', 'Enter block title here...')}
                   />
                 </div>
                 <div>
@@ -362,15 +451,15 @@ const AdminAbout = () => {
                     htmlFor={`block_description_${index}`}
                     className="block text-gray-700 text-sm font-bold mb-2"
                   >
-                    وصف الكتلة (اختياري):
+                    {t('block_description', 'Block Description (Optional)')}:
                   </label>
                   <textarea
                     id={`block_description_${index}`}
                     name="block_description"
-                    value={block.block_description}
+                    value={block.block_description || ''}
                     onChange={(e) => handleBlockChange(index, e)}
                     className="w-full h-20 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 resize-y"
-                    placeholder="أدخل وصف الكتلة هنا (اختياري)..."
+                    placeholder={t('enter_block_description', 'Enter block description here (optional)...')}
                   />
                 </div>
               </div>
@@ -388,16 +477,15 @@ const AdminAbout = () => {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              إضافة كتلة جديدة
+              {t('add_new_block', 'Add New Block')}
             </button>
           </div>
-          {/* Features Section - Added */}
           <div className="mt-8 border-t pt-6 border-gray-200">
-            <h3 className="text-2xl font-bold mb-4 text-gray-800">إدارة المميزات (لصفحة "فلسفتنا والتزامنا")</h3>
+            <h3 className="text-2xl font-bold mb-4 text-gray-800">{t('manage_features', 'Manage Features (for "Our Philosophy and Commitment")')}</h3>
             {formData.features.map((feature, index) => (
               <div key={index} className="bg-gray-100 p-4 rounded-lg mb-4 shadow-sm border border-gray-200">
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-lg font-semibold text-gray-700">الميزة #{index + 1}</h4>
+                  <h4 className="text-lg font-semibold text-gray-700">{t('feature', 'Feature')} #{index + 1}</h4>
                   <button
                     onClick={() => removeFeature(index)}
                     className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
@@ -423,16 +511,16 @@ const AdminAbout = () => {
                     htmlFor={`feature_title_${index}`}
                     className="block text-gray-700 text-sm font-bold mb-2"
                   >
-                    عنوان الميزة:
+                    {t('feature_title', 'Feature Title')}:
                   </label>
                   <input
                     type="text"
                     id={`feature_title_${index}`}
-                    name="title" // Changed to 'title' to match feature object structure
-                    value={feature.title}
+                    name="title"
+                    value={feature.title || ''}
                     onChange={(e) => handleFeatureChange(index, e)}
                     className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700"
-                    placeholder="أدخل عنوان الميزة هنا..."
+                    placeholder={t('enter_feature_title', 'Enter feature title here...')}
                   />
                 </div>
                 <div>
@@ -440,15 +528,15 @@ const AdminAbout = () => {
                     htmlFor={`feature_description_${index}`}
                     className="block text-gray-700 text-sm font-bold mb-2"
                   >
-                    وصف الميزة:
+                    {t('feature_description', 'Feature Description')}:
                   </label>
                   <textarea
                     id={`feature_description_${index}`}
-                    name="description" // Changed to 'description'
-                    value={feature.description}
+                    name="description"
+                    value={feature.description || ''}
                     onChange={(e) => handleFeatureChange(index, e)}
                     className="w-full h-20 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 resize-y"
-                    placeholder="أدخل وصف الميزة هنا..."
+                    placeholder={t('enter_feature_description', 'Enter feature description here...')}
                   />
                 </div>
               </div>
@@ -466,7 +554,7 @@ const AdminAbout = () => {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              إضافة ميزة جديدة
+              {t('add_new_feature', 'Add New Feature')}
             </button>
           </div>
           <button
@@ -480,10 +568,10 @@ const AdminAbout = () => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                <span>جار الحفظ...</span>
+                <span>{t('saving', 'Saving...')}</span>
               </div>
             ) : (
-              'حفظ'
+              t('save', 'Save')
             )}
           </button>
         </div>

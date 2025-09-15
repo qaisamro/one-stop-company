@@ -2,7 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
-// Re-using the AnimatedNumber component for statistics
+// رابط القاعدة الأساسي للصور - يمكن إزالته إذا كان الـ image_url دائماً يأتي كاملاً من الـ API
+// ولكن لنقم بإبقائه للآن فقط لتجنب كسر أي استخدامات أخرى، مع الأخذ في الاعتبار أن image_url يأتي كاملاً
+const BASE_URL = 'http://one-stop.ps';
+
+// AnimatedNumber component for statistics
 const AnimatedNumber = ({ value, duration = 2000 }) => {
   const [currentValue, setCurrentValue] = useState(0);
   const ref = useRef(null);
@@ -13,10 +17,10 @@ const AnimatedNumber = ({ value, duration = 2000 }) => {
       ([entry]) => {
         if (entry.isIntersecting) {
           setInView(true);
-          observer.disconnect(); // Stop observing once it's in view to prevent re-triggering
+          observer.disconnect();
         }
       },
-      { threshold: 0.5 } // Trigger when 50% of the element is visible
+      { threshold: 0.5 }
     );
 
     if (ref.current) {
@@ -32,7 +36,7 @@ const AnimatedNumber = ({ value, duration = 2000 }) => {
 
   useEffect(() => {
     if (!inView) {
-      setCurrentValue(0); // Reset for potential re-entering view, though observer disconnects
+      setCurrentValue(0);
       return;
     }
 
@@ -51,11 +55,10 @@ const AnimatedNumber = ({ value, duration = 2000 }) => {
     };
 
     requestAnimationFrame(animate);
-  }, [value, duration, inView]); // Only re-run if value, duration, or inView changes
+  }, [value, duration, inView]);
 
   return <span ref={ref}>{currentValue}</span>;
 };
-
 
 const CombinedChooseUsAndStatistics = () => {
   const { i18n, t } = useTranslation();
@@ -77,19 +80,18 @@ const CombinedChooseUsAndStatistics = () => {
       setLoadingFeatures(true);
       setErrorFeatures(null);
       try {
-        const res = await axios.get(`https://one-stop-company-1.onrender.com/api/features?lang=${i18n.language}`);
+        const res = await axios.get(`${BASE_URL}/api/features?lang=${i18n.language}`);
         setFeaturesData(res.data);
         const currentTabs = [
           res.data.section?.tab1_title,
           res.data.section?.tab2_title,
           res.data.section?.tab3_title,
-          res.data.section?.tab4_title
+          res.data.section?.tab4_title,
         ].filter(Boolean);
-        // Ensure activeTab is valid for the new data's tabs
         if (activeTab >= currentTabs.length && currentTabs.length > 0) {
           setActiveTab(0);
         } else if (currentTabs.length === 0) {
-            setActiveTab(-1); // No tabs available
+          setActiveTab(-1);
         }
       } catch (err) {
         console.error("Error fetching 'Why Choose Us' data:", err);
@@ -99,7 +101,7 @@ const CombinedChooseUsAndStatistics = () => {
       }
     };
     fetchFeatures();
-  }, [i18n.language, t]); // Removed activeTab from dependencies to prevent re-fetch on tab change
+  }, [i18n.language, t]);
 
   // Fetch Statistics data
   useEffect(() => {
@@ -107,14 +109,14 @@ const CombinedChooseUsAndStatistics = () => {
       setLoadingStats(true);
       setErrorStats(null);
       try {
-        const response = await axios.get(`https://one-stop-company-1.onrender.com/api/statistics?lang=${i18n.language}`);
+        const response = await axios.get(`${BASE_URL}/api/statistics?lang=${i18n.language}`);
         const formattedStats = response.data.map(stat => {
           const originalValue = String(stat.value);
           const numericValue = originalValue.endsWith('k') ? parseFloat(originalValue) * 1000 : parseInt(originalValue, 10);
           return {
             ...stat,
             value: numericValue,
-            originalValueString: originalValue
+            originalValueString: originalValue,
           };
         });
         setStatisticsData(formattedStats);
@@ -160,13 +162,13 @@ const CombinedChooseUsAndStatistics = () => {
     section?.tab1_title,
     section?.tab2_title,
     section?.tab3_title,
-    section?.tab4_title
+    section?.tab4_title,
   ].filter(Boolean);
   const filteredItems = items.filter(item => item.tab_index === activeTab);
 
   return (
-    <section 
-      id="why-choose-us" 
+    <section
+      id="why-choose-us"
       className={`relative overflow-hidden py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#fdfdf6] to-[#f3f5ff] ${directionClass}`}
     >
       <div className="container mx-auto relative z-10 max-w-screen-xl">
@@ -189,8 +191,7 @@ const CombinedChooseUsAndStatistics = () => {
 
         {/* Combined Content Area */}
         <div className="flex flex-col lg:flex-row bg-white rounded-3xl shadow-2xl overflow-hidden transition-transform duration-500 hover:scale-[1.005]">
-
-          {/* Left Side: Image and additional info (from WhyChooseUs) */}
+          {/* Left Side: Image and additional info */}
           <div className="lg:w-1/2 w-full h-[300px] md:h-[550px] relative overflow-hidden group">
             {section?.image_url ? (
               <>
@@ -200,7 +201,9 @@ const CombinedChooseUsAndStatistics = () => {
                   className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105 grayscale group-hover:grayscale-0"
                 />
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition duration-500" />
-                <div className={`absolute bottom-6 ${isArabic ? 'right-6' : 'left-6'} text-white opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 ${textAlignmentClass}`}>
+                <div
+                  className={`absolute bottom-6 ${isArabic ? 'right-6' : 'left-6'} text-white opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 ${textAlignmentClass}`}
+                >
                   <h3 className="text-xl font-bold">{section.title}</h3>
                   <p className="text-sm">{section.subtitle}</p>
                 </div>
@@ -224,8 +227,8 @@ const CombinedChooseUsAndStatistics = () => {
                       onClick={() => setActiveTab(idx)}
                       className={`px-5 py-2 rounded-full border text-sm sm:text-base font-semibold transition-all duration-300 shadow-sm
                         ${activeTab === idx
-                          ? 'bg-[#FFDD33] text-[#003366] border-[#FFDD33] hover:bg-[#FFDD33]/90' // Yellow background, Dark Blue text
-                          : 'bg-white text-gray-600 border-gray-300 hover:bg-[#FFDD33]/20 hover:text-[#003366]'}`} // White background, gray text, hover with light yellow background and dark blue text
+                          ? 'bg-[#FFDD33] text-[#003366] border-[#FFDD33] hover:bg-[#FFDD33]/90'
+                          : 'bg-white text-gray-600 border-gray-300 hover:bg-[#FFDD33]/20 hover:text-[#003366]'}`}
                     >
                       {tab}
                     </button>
@@ -237,16 +240,23 @@ const CombinedChooseUsAndStatistics = () => {
               {filteredItems.length > 0 ? (
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
                   {filteredItems.map((item, i) => (
-                    <li key={item.id || i} 
-                        className={`flex items-start gap-4 ${isArabic ? 'flex-row-reverse' : 'flex-row'} p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 animate-fade-in-up`}
-                        style={{ animationDelay: `${300 + (i * 100)}ms` }} // Staggered animation
+                    <li
+                      key={item.id || i}
+                      className={`flex items-start gap-4 ${isArabic ? 'flex-row-reverse' : 'flex-row'} p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 animate-fade-in-up`}
+                      style={{ animationDelay: `${300 + i * 100}ms` }}
                     >
-                      {/* Checkmark icon with Dark Blue background */}
                       <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-[#003366] text-white text-xl">
-                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                           </svg>
-                       </div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
                       <p className={`text-gray-800 font-medium text-base leading-snug flex-grow ${textAlignmentClass}`}>
                         {item.text}
                       </p>
@@ -259,16 +269,22 @@ const CombinedChooseUsAndStatistics = () => {
                 </p>
               )}
             </div>
-            
+
             {/* Button */}
             {section?.button_url && section?.button_text && (
               <div className={`mt-10 ${isArabic ? 'text-right' : 'text-left'} animate-fade-in-up delay-500`}>
                 <a
                   href={section.button_url}
-                  className="inline-flex items-center gap-2 bg-[#218A7A] text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 text-lg font-medium" // Turquoise for button
+                  className="inline-flex items-center gap-2 bg-[#218A7A] text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 text-lg font-medium"
                 >
                   {section.button_text}
-                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isArabic ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-5 w-5 ${isArabic ? 'rotate-180' : ''}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </a>
@@ -277,22 +293,23 @@ const CombinedChooseUsAndStatistics = () => {
           </div>
         </div>
 
-        {/* Statistics Section (Separate and always visible) */}
+        {/* Statistics Section */}
         {statisticsData.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-16 p-8 bg-[#003366] rounded-3xl shadow-2xl text-white"> {/* Dark Blue background for statistics section */}
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-16 p-8 bg-[#003366] rounded-3xl shadow-2xl text-white"
+            style={{ direction: isArabic ? 'rtl' : 'ltr' }}
+          >
             {statisticsData.map((stat, index) => (
               <div
                 key={stat.id || index}
-                className={`text-center animate-fade-in-up`}
+                className={`animate-fade-in-up ${textAlignmentClass}`}
                 style={{ animationDelay: `${index * 150}ms` }}
               >
-                <h3 className={`text-5xl md:text-6xl font-extrabold text-[#FFDD33] mb-2 leading-none`}> {/* Yellow for numbers */}
+                <h3 className="text-5xl md:text-6xl font-extrabold text-[#FFDD33] mb-2 leading-none">
                   <AnimatedNumber value={stat.value} />
                   {stat.originalValueString && stat.originalValueString.endsWith('k') ? 'k' : ''}
                 </h3>
-                <p className={`text-xl font-medium text-gray-100`}>
-                  {stat.label}
-                </p>
+                <p className="text-xl font-medium text-gray-100">{stat.label}</p>
               </div>
             ))}
           </div>

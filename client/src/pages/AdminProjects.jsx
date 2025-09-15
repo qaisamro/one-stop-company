@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { axiosInstance } from '../api/axiosConfig';
 
 const AdminProjects = () => {
     const { t, i18n } = useTranslation();
@@ -16,9 +16,13 @@ const AdminProjects = () => {
         image: null,
         additional_images: [],
         url: '',
-        language: i18n.language || 'ar',
+        language: 'ar', // Set Arabic as default language
         sections: []
     });
+    const [previewImage, setPreviewImage] = useState(null);
+    const [previewAdditionalImages, setPreviewAdditionalImages] = useState([]);
+    const [existingMainImageUrl, setExistingMainImageUrl] = useState(null);
+    const [existingAdditionalImageUrls, setExistingAdditionalImageUrls] = useState([]);
     const [backgroundImageFile, setBackgroundImageFile] = useState(null);
     const [currentBackgroundImage, setCurrentBackgroundImage] = useState('');
     const [error, setError] = useState('');
@@ -28,7 +32,14 @@ const AdminProjects = () => {
     const sidebarRef = useRef(null);
     const navigate = useNavigate();
 
+    // Refs for file inputs
+    const mainImageInputRef = useRef(null);
+    const additionalImagesInputRef = useRef(null);
+    const backgroundImageInputRef = useRef(null);
+
     useEffect(() => {
+        // Ensure language is set to Arabic
+        i18n.changeLanguage('ar');
         const token = localStorage.getItem('token');
         if (!token) {
             navigate('/admin/login');
@@ -36,18 +47,17 @@ const AdminProjects = () => {
             fetchProjects(form.language);
             fetchProjectBackground();
         }
-    }, [form.language, navigate]);
+    }, [form.language, navigate, i18n]);
 
     const fetchProjects = async (lang) => {
         setLoading(true);
         try {
-            const response = await axios.get(`https://one-stop-company-1.onrender.com/api/projects?lang=${lang}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-            });
+            const response = await axiosInstance.get(`/api/projects?lang=${lang}`);
             setProjects(response.data);
             setError('');
         } catch (err) {
-            setError(t('errors.fetchProjectsError'));
+            const errorMessage = err.response?.data?.error || t('errors.fetchProjectsError');
+            setError(errorMessage);
             console.error('Fetch projects error:', err);
         } finally {
             setLoading(false);
@@ -56,9 +66,11 @@ const AdminProjects = () => {
 
     const fetchProjectBackground = async () => {
         try {
-            const response = await axios.get('https://one-stop-company-1.onrender.com/api/projects/background');
-            setCurrentBackgroundImage(response.data.imagePath ? `https://one-stop-company-1.onrender.com/api${response.data.imagePath}` : '');
+            const response = await axiosInstance.get('/api/projects/background');
+            setCurrentBackgroundImage(response.data.imagePath || '');
         } catch (err) {
+            const errorMessage = err.response?.data?.error || t('errors.fetchBackgroundError');
+            setError(errorMessage);
             console.error('Error fetching project background:', err);
         }
     };
@@ -67,8 +79,10 @@ const AdminProjects = () => {
         const { name, value, files } = e.target;
         if (name === 'image') {
             setForm({ ...form, image: files ? files[0] : null });
+            setPreviewImage(files && files[0] ? URL.createObjectURL(files[0]) : null);
         } else if (name === 'additional_images') {
             setForm({ ...form, additional_images: files ? Array.from(files) : [] });
+            setPreviewAdditionalImages(files ? Array.from(files).map(file => URL.createObjectURL(file)) : []);
         } else if (name === 'backgroundImage') {
             setBackgroundImageFile(files ? files[0] : null);
         } else {
@@ -90,8 +104,34 @@ const AdminProjects = () => {
         setForm({ ...form, sections: form.sections.filter((_, i) => i !== index) });
     };
 
+    const removeExistingAdditionalImage = (indexToRemove) => {
+        setExistingAdditionalImageUrls(prevUrls => prevUrls.filter((_, index) => index !== indexToRemove));
+    };
+
+    const resetForm = () => {
+        setForm({
+            id: null,
+            title: '',
+            extra_title: '',
+            title_description: '',
+            description: '',
+            detailed_description: '',
+            image: null,
+            additional_images: [],
+            url: '',
+            language: 'ar',
+            sections: []
+        });
+        setPreviewImage(null);
+        setPreviewAdditionalImages([]);
+        setExistingMainImageUrl(null);
+        setExistingAdditionalImageUrls([]);
+        if (mainImageInputRef.current) mainImageInputRef.current.value = '';
+        if (additionalImagesInputRef.current) additionalImagesInputRef.current.value = '';
+    };
+
     const handleAdd = async () => {
-        if (!form.title || !form.description) {
+        if (!form.title || !form.description || !form.language) {
             setError(t('errors.requiredFields'));
             return;
         }
@@ -109,34 +149,19 @@ const AdminProjects = () => {
                 formData.append('image', form.image);
             }
             form.additional_images.forEach(file => {
-                formData.append('additional_images', file);
+                formData.append('additional_images[]', file);
             });
             formData.append('sections', JSON.stringify(form.sections));
-            const response = await axios.post('https://one-stop-company-1.onrender.com/api/projects', formData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+
+            await axiosInstance.post('/api/projects', formData);
             setMessage(t('messages.addProjectSuccess'));
             setError('');
-            setForm({
-                id: null,
-                title: '',
-                extra_title: '',
-                title_description: '',
-                description: '',
-                detailed_description: '',
-                image: null,
-                additional_images: [],
-                url: '',
-                language: form.language,
-                sections: []
-            });
+            resetForm();
             fetchProjects(form.language);
             setTimeout(() => setMessage(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.error || t('errors.addProjectError'));
+            const errorMessage = err.response?.data?.error || err.response?.data?.errors || t('errors.addProjectError');
+            setError(errorMessage);
             console.error('Add project error:', err);
         } finally {
             setLoading(false);
@@ -146,21 +171,27 @@ const AdminProjects = () => {
     const handleEdit = (project) => {
         setForm({
             id: project.id,
-            title: project.title,
+            title: project.title || '',
             extra_title: project.extra_title || '',
             title_description: project.title_description || '',
-            description: project.description,
+            description: project.description || '',
             detailed_description: project.detailed_description || '',
             image: null,
             additional_images: [],
             url: project.url || '',
-            language: form.language,
+            language: project.language || 'ar',
             sections: Array.isArray(project.sections) ? project.sections : []
         });
+        setExistingMainImageUrl(project.image || null);
+        setExistingAdditionalImageUrls(project.additional_images || []);
+        setPreviewImage(null);
+        setPreviewAdditionalImages([]);
+        if (mainImageInputRef.current) mainImageInputRef.current.value = '';
+        if (additionalImagesInputRef.current) additionalImagesInputRef.current.value = '';
     };
 
     const handleUpdate = async () => {
-        if (!form.id || !form.title || !form.description) {
+        if (!form.id || !form.title || !form.description || !form.language) {
             setError(t('errors.requiredFields'));
             return;
         }
@@ -178,34 +209,21 @@ const AdminProjects = () => {
                 formData.append('image', form.image);
             }
             form.additional_images.forEach(file => {
-                formData.append('additional_images', file);
+                formData.append('additional_images[]', file);
             });
+            formData.append('existing_additional_images', JSON.stringify(existingAdditionalImageUrls));
             formData.append('sections', JSON.stringify(form.sections));
-            const response = await axios.put(`https://one-stop-company-1.onrender.com/api/projects/${form.id}`, formData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            formData.append('_method', 'PUT');
+
+            await axiosInstance.post(`/api/projects/${form.id}`, formData);
             setMessage(t('messages.updateProjectSuccess'));
             setError('');
-            setForm({
-                id: null,
-                title: '',
-                extra_title: '',
-                title_description: '',
-                description: '',
-                detailed_description: '',
-                image: null,
-                additional_images: [],
-                url: '',
-                language: form.language,
-                sections: []
-            });
+            resetForm();
             fetchProjects(form.language);
             setTimeout(() => setMessage(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.error || t('errors.updateProjectError'));
+            const errorMessage = err.response?.data?.error || err.response?.data?.errors || t('errors.updateProjectError');
+            setError(errorMessage);
             console.error('Update project error:', err);
         } finally {
             setLoading(false);
@@ -215,15 +233,14 @@ const AdminProjects = () => {
     const handleDelete = async (id) => {
         setLoading(true);
         try {
-            const response = await axios.delete(`https://one-stop-company-1.onrender.com/api/projects/${id}?lang=${form.language}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-            });
+            await axiosInstance.delete(`/api/projects/${id}?lang=${form.language}`);
             setMessage(t('messages.deleteProjectSuccess'));
             setError('');
             fetchProjects(form.language);
             setTimeout(() => setMessage(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.error || t('errors.deleteProjectError'));
+            const errorMessage = err.response?.data?.error || t('errors.deleteProjectError');
+            setError(errorMessage);
             console.error('Delete project error:', err);
         } finally {
             setLoading(false);
@@ -239,19 +256,16 @@ const AdminProjects = () => {
         try {
             const formData = new FormData();
             formData.append('image', backgroundImageFile);
-            const response = await axios.post('https://one-stop-company-1.onrender.com/api/projects/background', formData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            await axiosInstance.post('/api/projects/background', formData);
             setMessage(t('messages.updateBackgroundSuccess'));
             setError('');
             setBackgroundImageFile(null);
+            if (backgroundImageInputRef.current) backgroundImageInputRef.current.value = '';
             fetchProjectBackground();
             setTimeout(() => setMessage(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.error || t('errors.updateBackgroundError'));
+            const errorMessage = err.response?.data?.error || t('errors.updateBackgroundError');
+            setError(errorMessage);
             console.error('Update background image error:', err);
         } finally {
             setLoading(false);
@@ -275,7 +289,7 @@ const AdminProjects = () => {
     };
 
     return (
-        <div className={`min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex ${i18n.language === 'ar' ? 'flex-row-reverse' : 'flex-row'} font-sans`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+        <div className={`min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-row-reverse font-sans`} dir="rtl">
             {isSidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-60 md:hidden z-40 transition-opacity duration-300"
@@ -323,6 +337,7 @@ const AdminProjects = () => {
                             accept="image/*"
                             onChange={handleChange}
                             className="p-3 border border-gray-200 rounded-lg w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md"
+                            ref={backgroundImageInputRef}
                         />
                         <button
                             onClick={handleUpdateProjectBackground}
@@ -408,13 +423,64 @@ const AdminProjects = () => {
                             onChange={handleChange}
                             className="p-3 border border-gray-200 rounded-lg w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md"
                         />
+
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                            {t('mainImageLabel')}
+                        </label>
+                        {existingMainImageUrl && (
+                            <div className="mb-2">
+                                <p className="text-gray-600 text-sm">{t('currentImage')}</p>
+                                <img src={existingMainImageUrl} alt={t('currentImage')} className="w-24 h-24 object-cover rounded-md border border-gray-200" />
+                            </div>
+                        )}
+                        {previewImage && (
+                            <div className="mb-2">
+                                <p className="text-gray-600 text-sm">{t('newImagePreview')}</p>
+                                <img src={previewImage} alt={t('newImagePreview')} className="w-24 h-24 object-cover rounded-md border border-gray-200" />
+                            </div>
+                        )}
                         <input
                             type="file"
                             name="image"
                             accept="image/*"
                             onChange={handleChange}
                             className="p-3 border border-gray-200 rounded-lg w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md"
+                            ref={mainImageInputRef}
                         />
+
+                        <label className="block text-gray-700 text-sm font-bold mb-2 mt-4">
+                            {t('additionalImagesLabel')}
+                        </label>
+                        {existingAdditionalImageUrls.length > 0 && (
+                            <div className="mb-2">
+                                <p className="text-gray-600 text-sm">{t('currentAdditionalImages')}</p>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {existingAdditionalImageUrls.map((img, index) => (
+                                        <div key={`existing-${index}`} className="relative">
+                                            <img src={img} alt={t('additionalImages')} className="w-24 h-24 object-cover rounded-md border border-gray-200" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeExistingAdditionalImage(index)}
+                                                className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600 focus:outline-none"
+                                                aria-label={t('removeImage')}
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {previewAdditionalImages.length > 0 && (
+                            <div className="mb-2">
+                                <p className="text-gray-600 text-sm">{t('newAdditionalImagesPreview')}</p>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {previewAdditionalImages.map((img, index) => (
+                                        <img key={`preview-${index}`} src={img} alt={t('newAdditionalImagesPreview')} className="w-24 h-24 object-cover rounded-md border border-gray-200" />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         <input
                             type="file"
                             name="additional_images"
@@ -422,7 +488,9 @@ const AdminProjects = () => {
                             multiple
                             onChange={handleChange}
                             className="p-3 border border-gray-200 rounded-lg w-full bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 hover:shadow-md"
+                            ref={additionalImagesInputRef}
                         />
+
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-800">{t('sectionsTitle')}</h3>
                             {form.sections.map((section, index) => (
@@ -503,21 +571,24 @@ const AdminProjects = () => {
                                                 </a>
                                             )}
                                             {project.image && (
-                                                <img
-                                                    src={`https://one-stop-company-1.onrender.com/api${project.image}`}
-                                                    alt={project.title}
-                                                    className="w-20 mt-2 rounded"
-                                                />
+                                                <div className="mt-2">
+                                                    <p className="text-gray-600 text-sm">{t('mainImage')}</p>
+                                                    <img
+                                                        src={project.image}
+                                                        alt={project.title}
+                                                        className="w-20 h-20 object-cover rounded"
+                                                    />
+                                                </div>
                                             )}
                                             {project.additional_images && project.additional_images.length > 0 && (
                                                 <div className="mt-2">
                                                     <p className="text-gray-600 text-sm">{t('additionalImages')}</p>
-                                                    <div className="flex gap-2">
+                                                    <div className="flex flex-wrap gap-2">
                                                         {project.additional_images.map((img, index) => (
                                                             <img
                                                                 key={index}
-                                                                src={`https://one-stop-company-1.onrender.com/api${img}`}
-                                                                alt={`${t('additionalImages')} ${index + 1}`}
+                                                                src={img}
+                                                                alt={t('additionalImages')}
                                                                 className="w-20 h-20 object-cover rounded"
                                                             />
                                                         ))}

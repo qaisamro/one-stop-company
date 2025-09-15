@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, A11y, Autoplay } from 'swiper/modules';
+import { axiosInstance } from '../api/axiosConfig';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -15,9 +15,13 @@ const Projects = () => {
     const [error, setError] = useState('');
     const [backgroundImage, setBackgroundImage] = useState('');
 
-    const isArabic = i18n.language === 'ar';
-    const textAlignmentClass = isArabic ? 'text-right' : 'text-left';
-    const flexDirectionClass = isArabic ? 'flex-row-reverse' : 'flex-row';
+    // Enforce Arabic language
+    useEffect(() => {
+        i18n.changeLanguage('ar');
+    }, [i18n]);
+
+    const textAlignmentClass = 'text-right';
+    const flexDirectionClass = 'flex-row-reverse';
 
     const colors = {
         yellow: '#FFDD33',
@@ -30,14 +34,14 @@ const Projects = () => {
             setLoading(true);
             try {
                 // Fetch projects
-                const projectsResponse = await axios.get(`https://one-stop-company-1.onrender.com/api/projects?lang=${i18n.language}`);
+                const projectsResponse = await axiosInstance.get(`/api/projects?lang=${i18n.language}`);
                 console.log('Fetched projects:', projectsResponse.data);
                 setProjects(projectsResponse.data.filter(project => project.id));
 
                 // Fetch background image
                 try {
-                    const backgroundResponse = await axios.get('https://one-stop-company-1.onrender.com/api/projects/background');
-                    setBackgroundImage(backgroundResponse.data.imagePath ? `https://one-stop-company-1.onrender.com/api${backgroundResponse.data.imagePath}` : '');
+                    const backgroundResponse = await axiosInstance.get('/api/projects/background');
+                    setBackgroundImage(backgroundResponse.data.imagePath || '');
                 } catch (bgErr) {
                     console.error('Error fetching background:', bgErr);
                     setBackgroundImage('');
@@ -45,7 +49,7 @@ const Projects = () => {
                 setError('');
             } catch (err) {
                 console.error("Error fetching data for projects section:", err);
-                setError(t('error_loading_projects') || 'فشل تحميل المشاريع أو الخلفية.');
+                setError(t('error_loading_projects'));
             } finally {
                 setLoading(false);
             }
@@ -57,7 +61,7 @@ const Projects = () => {
         <section
             id="projects"
             className="py-16 md:py-24 overflow-hidden relative bg-cover bg-center"
-            style={{ backgroundImage: backgroundImage ? `url('${backgroundImage}')` : 'none' }}
+            style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none' }}
         >
             {backgroundImage && (
                 <div className="absolute inset-0 bg-white opacity-90 dark:bg-gray-900 dark:opacity-80 z-0"></div>
@@ -68,7 +72,7 @@ const Projects = () => {
                         className={`text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight ${textAlignmentClass}`}
                         style={{ color: colors.darkBlue }}
                     >
-                        {t('projects_main_title') || 'مشاريعنا تعكس التزامنا بالجودة والابتكار'}
+                        {t('projects_main_title')}
                     </h2>
                 </div>
                 {loading && (
@@ -77,7 +81,7 @@ const Projects = () => {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                         </svg>
-                        <p>{t('loading_projects') || 'جارٍ تحميل المشاريع...'}</p>
+                        <p>{t('loading_projects')}</p>
                     </div>
                 )}
                 {error && (
@@ -87,7 +91,7 @@ const Projects = () => {
                 )}
                 {!loading && !error && projects.length === 0 && (
                     <p className={`text-gray-600 dark:text-gray-400 text-center text-lg py-8 ${textAlignmentClass}`}>
-                        {t('no_projects_available') || 'لا توجد مشاريع متاحة حاليًا.'}
+                        {t('no_projects_available')}
                     </p>
                 )}
                 {!loading && !error && projects.length > 0 && (
@@ -97,7 +101,7 @@ const Projects = () => {
                         slidesPerView={1}
                         navigation={true}
                         pagination={{ clickable: true }}
-                        autoplay={{ delay: 5000, disableOnInteraction: false }}
+                        autoplay={{ delay: 8000, disableOnInteraction: false }}
                         loop={true}
                         breakpoints={{
                             640: { slidesPerView: 2, spaceBetween: 20 },
@@ -120,7 +124,7 @@ const Projects = () => {
                                     {project.image && (
                                         <div className="relative h-56 overflow-hidden">
                                             <img
-                                                src={`https://one-stop-company-1.onrender.com/api${project.image}`}
+                                                src={project.image}
                                                 alt={project.title}
                                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                             />
@@ -129,16 +133,10 @@ const Projects = () => {
                                                 className={`absolute inset-0 flex items-center justify-center transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out text-white text-lg font-semibold ${flexDirectionClass}`}
                                                 style={{ backgroundColor: `${colors.darkBlue}E6` }}
                                             >
-                                                {t('view_more') || 'عرض المزيد'}
-                                                {isArabic ? (
-                                                    <svg className="mr-2 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                                    </svg>
-                                                ) : (
-                                                    <svg className="ml-2 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M9.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L6.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                                                    </svg>
-                                                )}
+                                                {t('view_more')}
+                                                <svg className="mr-2 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                </svg>
                                             </Link>
                                         </div>
                                     )}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, A11y } from 'swiper/modules';
+import { axiosInstance } from '../api/axiosConfig';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -19,9 +19,13 @@ const ProjectDetailPage = () => {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
 
-    const isArabic = i18n.language === 'ar';
-    const textAlignmentClass = isArabic ? 'text-right' : 'text-left';
-    const dirAttribute = isArabic ? 'rtl' : 'ltr';
+    // Enforce Arabic language
+    useEffect(() => {
+        i18n.changeLanguage('ar');
+    }, [i18n]);
+
+    const textAlignmentClass = 'text-right';
+    const dirAttribute = 'rtl';
 
     const colors = {
         yellow: '#FFDD33',
@@ -38,7 +42,7 @@ const ProjectDetailPage = () => {
             setLoading(true);
             console.log(`Fetching project with ID: ${id}, language: ${i18n.language}`);
             try {
-                const response = await axios.get(`https://one-stop-company-1.onrender.com/api/projects/${id}?lang=${i18n.language}`);
+                const response = await axiosInstance.get(`/api/projects/${id}?lang=${i18n.language}`);
                 setProject(response.data);
                 setError('');
             } catch (err) {
@@ -78,7 +82,7 @@ const ProjectDetailPage = () => {
                         >
                             {t('back_to_home')}
                             <svg
-                                className={`h-5 w-5 ${isArabic ? 'order-first ml-0 mr-2 rtl:rotate-180' : 'ml-2'}`}
+                                className="order-first ml-0 mr-2 rtl:rotate-180 h-5 w-5"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
@@ -137,7 +141,7 @@ const ProjectDetailPage = () => {
                                     {project.image && (
                                         <SwiperSlide>
                                             <img
-                                                src={`https://one-stop-company-1.onrender.com/api${project.image}`}
+                                                src={project.image}
                                                 alt={project.title}
                                                 className="w-full h-80 sm:h-96 object-cover rounded-2xl"
                                             />
@@ -146,7 +150,7 @@ const ProjectDetailPage = () => {
                                     {project.additional_images?.map((img, index) => (
                                         <SwiperSlide key={index}>
                                             <img
-                                                src={`https://one-stop-company-1.onrender.com/api${img}`}
+                                                src={img}
                                                 alt={`${project.title} - ${index + 1}`}
                                                 className="w-full h-80 sm:h-96 object-cover rounded-2xl"
                                             />
@@ -161,9 +165,9 @@ const ProjectDetailPage = () => {
                                             flex items-center justify-center cursor-pointer select-none
                                             bg-black/40 hover:bg-black/60 transition-colors duration-300
                                             text-white
-                                            ${isArabic ? 'left-auto right-4' : 'left-4'}
+                                            left-auto right-4
                                             after:content-[''] after:!bg-none
-                                            ${isArabic ? 'rtl:before:content-["\\u2192"]' : 'before:content-["\\u2190"]'}
+                                            rtl:before:content-["\\u2192"]
                                             before:text-2xl before:font-bold
                                             dark:bg-white/30 dark:hover:bg-white/50 dark:text-gray-900
                                         `}
@@ -176,9 +180,9 @@ const ProjectDetailPage = () => {
                                             flex items-center justify-center cursor-pointer select-none
                                             bg-black/40 hover:bg-black/60 transition-colors duration-300
                                             text-white
-                                            ${isArabic ? 'right-auto left-4' : 'right-4'}
+                                            right-auto left-4
                                             after:content-[''] after:!bg-none
-                                            ${isArabic ? 'rtl:before:content-["\\u2190"]' : 'before:content-["\\u2192"]'}
+                                            rtl:before:content-["\\u2190"]
                                             before:text-2xl before:font-bold
                                             dark:bg-white/30 dark:hover:bg-white/50 dark:text-gray-900
                                         `}
@@ -250,7 +254,7 @@ const ProjectDetailPage = () => {
                             )}
                         </div>
 
-                        <div className={`mt-10 flex gap-4 ${isArabic ? 'justify-end' : 'justify-start'}`}>
+                        <div className="mt-10 flex gap-4 justify-end">
                             {project.url && (
                                 <a
                                     href={project.url}
@@ -263,7 +267,7 @@ const ProjectDetailPage = () => {
                                 >
                                     {t('visit_project')}
                                     <svg
-                                        className={`h-5 w-5 ${isArabic ? 'order-first ml-0 mr-2 rtl:rotate-180' : 'ml-2'}`}
+                                        className="order-first ml-0 mr-2 rtl:rotate-180 h-5 w-5"
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20"
                                         fill="currentColor"
@@ -282,7 +286,7 @@ const ProjectDetailPage = () => {
                             >
                                 {t('back_to_home')}
                                 <svg
-                                    className={`h-5 w-5 ${isArabic ? 'order-first ml-0 mr-2 rtl:rotate-180' : 'ml-2'}`}
+                                    className="order-first ml-0 mr-2 rtl:rotate-180 h-5 w-5"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
