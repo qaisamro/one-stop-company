@@ -168,13 +168,22 @@
     "updateBackgroundSuccess": "تم تحديث صورة الخلفية بنجاح"
   },
   "csr": "المسؤولية المجتمعية ",
-  "gallery": {
+   "gallery": {
     "page_title": "معرض الصور",
     "description": "استكشف مجموعتنا المنسقة من الصور التي تعرض أحدث مشاريعنا وأنشطتنا وراء الكواليس.",
     "no_images": "لا توجد صور متاحة حاليًا.",
     "image_alt": "صورة المعرض رقم {{index}}",
-    "selected_image_alt": "صورة مكبرة"
+    "selected_image_alt": "صورة مكبرة",
+    "showing": "عرض",
+    "of": "من أصل",
+    "images": "صورة",
+    "showing_count": "عرض {{start}} - {{end}} من أصل {{total}} صورة"
   },
+   "pagination": {
+    "previous": "السابق",
+    "next": "التالي"
+  },
+
   "loading": {
     "text": "جاري التحميل..."
   },

@@ -113,12 +113,20 @@
   "delete_member": "Delete Member",
   "add_member": "Add Member",
   "csr": "CSR",
-  "gallery": {
+   "gallery": {
     "page_title": "Photo Gallery",
     "description": "Explore our curated collection of images showcasing our latest projects, activities, and behind-the-scenes moments.",
     "no_images": "No images available at the moment.",
     "image_alt": "Gallery image {{index}}",
-    "selected_image_alt": "Enlarged image"
+    "selected_image_alt": "Enlarged image",
+    "showing": "Showing",
+    "of": "of",
+    "images": "images",
+    "showing_count": "Showing {{start}} - {{end}} of {{total}} images"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
   },
   "loading": {
     "text": "Loading..."

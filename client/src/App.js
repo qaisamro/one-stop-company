@@ -29,8 +29,8 @@ import AdminProjects from './pages/AdminProjects';
 import AdminFeatures from './pages/AdminFeatures';
 import AdminStory from './pages/AdminStory';
 import AdminCSR from './pages/AdminCSR';
-import AdminGallery from './pages/GalleryPage'; // تم تصحيح الاستيراد
-import GalleryPage from './pages/GalleryPage';
+import AdminGallery from './pages/AdminGallery'; // تم تصحيح الاستيراد
+import GalleryPage from './components/GalleryPage';
 
 // Layout component for public pages
 const PublicLayout = ({ showScrollToTop, scrollToTop, activeSection, setActiveSection, showGalleryButton }) => {
