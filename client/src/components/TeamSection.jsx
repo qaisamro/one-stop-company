@@ -92,7 +92,7 @@ const SocialIcon = ({ platform, url }) => {
             hoverColorClass = "hover:text-blue-700";
             break;
         case 'dribbble':
-            iconPath = "M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1.848 3.099c-.198-.01-.397-.008-.595 0-2.316.03-4.184 1.986-4.184 4.312 0 1.22.52 2.327 1.365 3.094-.616 1.085-1.56 2.062-2.736 2.923C3.593 14.654 2.87 15.11 2.3 15.655c.446.52.936.985 1.442 1.39.26.208.52.416.78.625.568.452 1.07.828 1.517 1.096 1.107.669 2.072 1.03 2.842 1.03.35 0 .685-.067 1-.2C9.53 19.532 9.872 19.09 10.22 18.65c.348-.44.697-.87.962-1.25.265-.38.45-.69.55-.93.1-.24.16-.39.18-.45.02-.06.01-.12-.03-.18-.04-.06-.11-.11-.21-.15-.1-.04-.21-.05-.33-.04-.12.01-.24.03-.36.06-.12.03-.25.07-.38.12-.13.05-.26.09-.4.12-.14.03-.28.05-.43.05-.15 0-.3-.02-.45-.06-.15-.04-.3-.09-.44-.15-.14-.06-.27-.12-.4-.2-.13-.08-.25-.16-.37-.25-.12-.09-.23-.19-.34-.3-.11-.11-.21-.22-.3-.34-.09-.12-.17-.25-.24-.39-.07-.14-.13-.28-.18-.42-.05-.14-.08-.28-.08-.43 0-.15.02-.3.05-.45.03-.15.07-.3.12-.44-.05-.14-.1-.27-.15-.4-.05-.13-.09-.25-.12-.38-.03-.13-.04-.25-.04-.38 0-.13.01-.25.03-.38.02-.13.05-.25.09-.38-.04-.13-.09-.25-.15-.38-.06-.13-.13-.25-.2-.37-.07-.12-.15-.24-.24-.36-.09-.12-.18-.24-.28-.35-.1-.11-.21-.21-.32-.3-.11-.09-.22-.17-.34-.23-.12-.06-.25-.1-.38-.12-.13-.02-.26-.03-.39-.02-.13.01-.25.03-.38.06-.13.03-.25.07-.37.12-.12.05-.24.09-.35.13-.11.04-.22.06-.32.07-.1.01-.19.01-.26-.01zm7.848 10.901c.198.01.397.008.595 0 2.316-.03 4.184-1.986 4.184-4.312 0-1.22-.52-2.327-1.365-3.094.616-1.085 1.56-2.062 2.736-2.923C20.407 9.346 21.13 8.89 21.7 8.345c-.446-.52-.936-.985-1.442-1.39-.26-.208-.52-.416-.78-.625-.568-.452-1.07-.828-1.517-1.096-1.107-.669-2.072-1.03-2.842-1.03-.35 0-.685.067-1 .2-.348.138-.69.58-.962.96-.272.38-.45.69-.55.93-.1.24-.16.39-.18.45-.02.06-.01.12-.03.18-.04-.06-.11-.11-.21-.15-.1-.04-.21-.05-.33-.04-.12.01-.24.03-.36.06-.12.03-.25.07-.38.12-.13.05-.26.09-.4.12-.14.03-.28.05-.43.05-.15 0-.3-.02-.45-.06-.15-.04-.3-.09-.44-.15-.14-.06-.27-.12-.4-.2-.13-.08-.25-.16-.37-.25-.12-.09-.23-.19-.34-.3-.11-.11-.21-.22-.3-.34-.09-.12-.17-.25-.24-.39-.07-.14-.13-.28-.18-.42-.05-.14-.08-.28-.08-.43 0-.15-.02-.3-.05-.45-.03-.15-.07-.3-.12-.44-.05-.14-.1-.27-.15-.4-.05-.13-.09-.25-.12-.38-.03-.13-.04-.25-.04-.38 0-.13.01-.25.03-.38.02-.13.05-.25.09-.38-.04-.13-.09-.25-.15-.38-.06-.13-.13-.25-.2-.37-.07-.12-.15-.24-.24-.36-.09-.12-.18-.24-.28-.35-.1-.11-.21-.21-.32-.3-.11-.09-.22-.17-.34-.23-.12-.06-.25-.1-.38-.12-.13-.02-.26-.03-.39-.02-.13.01-.25.03-.38.06-.13.03-.25.07-.37.12-.12.05-.24.09-.35.13-.11.04-.22.06-.32.07-.1.01-.19.01-.26-.01z";
+            iconPath = "M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1.848 3.099c-.198-.01-.397-.008-.595 0-2.316.03-4.184 1.986-4.184 4.312 0 1.22.52 2.327 1.365 3.094-.616 1.085-1.56 2.062-2.736 2.923C3.593 14.654 2.87 15.11 2.3 15.655c.446.52.936.985 1.442 1.39.26.208.52.416.78.625.568.452 1.07.828 1.517 1.096 1.107.669 2.072 1.03 2.842 1.03.35 0 .685-.067 1-.2C9.53 19.532 9.872 19.09 10.22 18.65c.348-.44.697-.87.962-1.25.265-.38.45-.69.55-.93.1-.24.16-.39.18-.45.02-.06.01-.12-.03-.18-.04-.06-.11-.11-.21-.15-.1-.04-.21-.05-.33-.04-.12.01-.24.03-.36.06-.12.03-.25.07-.38.12-.13.05-.26.09-.4.12-.14.03-.28.05-.43.05-.15 0-.3-.02-.45-.06-.15-.04-.3-.09-.44-.15-.14-.06-.27-.12-.4-.2-.13-.08-.25-.16-.37-.25-.12-.09-.23-.19-.34-.3-.11-.11-.21-.22-.3-.34-.09-.12-.17-.25-.24-.39-.07-.14-.13-.28-.18-.42-.05-.14-.08-.28-.08-.43 0-.15.02-.3.05-.45.03-.15.07-.3.12-.44-.05-.14-.1-.27-.15-.4-.05-.13-.09-.25-.12-.38-.03-.13-.04-.25-.04-.38 0-.13.01-.25.03-.38.02-.13.05-.25.09-.38-.04-.13-.09-.25-.15-.38-.06-.13-.13-.25-.2-.37-.07-.12-.15-.24-.24-.36-.09-.12-.18-.24-.28-.35-.1-.11-.21-.21-.32-.3-.11-.09-.22-.17-.34-.23-.12-.06-.25-.1-.38-.12-.13-.02-.26-.03-.39-.02-.13.01-.25.03-.38.06-.13.03-.25.07-.37.12-.12.05-.24.09-.35.13-.11.04-.22.06-.32.07-.1.01-.19.01-.26-.01zm7.848 10.901c.198.01.397.008.595 0 2.316-.03 4.184-1.986 4.184-4.312 0-1.22-.52-2.327-1.365-3.094.616-1.085 1.56-2.062 2.736-2.923C20.407 9.346 21.13 8.89 21.7 8.345c-.446-.52-.936-.985-1.442-1.39-.26-.208-.52-.416-.78-.625-.568-.452-1.07-.828-1.517-1.096-1.107-.669-2.072-1.03-2.842-1.03-.35 0-.685.067-1 .2-.348.138-.69.58-.962.96-.272.38-.45.69-.55.93-.1.24-.16.39-.18.45-.02.06-.01.12-.03.18-.04-.06-.11-.11-.21-.15-.1-.04-.21-.05-.33-.04-.12.01-.24.03-.36.06-.12.03-.25.07-.38.12-.13.05-.26.09-.4.12-.14.03-.28.05-.43.05-.15 0-.3-.02-.45-.06-.15-.04-.3-.09-.44-.15-.14-.06-.27-.12-.4-.2-.13-.08-.25-.16-.37-.25-.12-.09-.23-.19-.34-.3-.11-.11-.21-.22-.3-.34-.09-.12-.17-.25-.24-.39-.07-.14-.13-.28-.18-.42-.05-.14-.08-.28-.08-.43 0-.15-.02-.3-.05-.45-.03-.15-.07-.3.12-.44-.05-.14-.1-.27-.15-.4-.05-.13-.09-.25-.12-.38-.03-.13-.04-.25-.04-.38 0-.13.01-.25.03-.38.02-.13.05-.25.09-.38-.04-.13-.09-.25-.15-.38-.06-.13-.13-.25-.2-.37-.07-.12-.15-.24-.24-.36-.09-.12-.18-.24-.28-.35-.1-.11-.21-.21-.32-.3-.11-.09-.22-.17-.34-.23-.12-.06-.25-.1-.38-.12-.13-.02-.26-.03-.39-.02-.13.01-.25.03-.38.06-.13.03-.25.07-.37.12-.12.05-.24.09-.35.13-.11.04-.22.06-.32.07-.1.01-.19.01-.26-.01z";
             ariaLabel = "Dribbble profile";
             hoverColorClass = "hover:text-pink-600";
             break;
@@ -130,11 +130,44 @@ const TeamSection = () => {
     const [loading, setLoading] = useState(true);
     const [showSocialsForMember, setShowSocialsForMember] = useState(null);
     const [isTouchDevice, setIsTouchDevice] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Number of items per page for different screen sizes
+    const itemsPerPageLarge = 8; // 4x2 for large screens
+    const itemsPerPageSmall = 3;  // 2x2 for small screens
 
     const carouselRef = useRef(null);
 
     const isArabic = i18n.language === 'ar';
     const textAlignmentClass = isArabic ? 'text-right' : 'text-left';
+
+    // Calculate items per page based on screen size
+    const getItemsPerPage = () => {
+        return window.innerWidth >= 1024 ? itemsPerPageLarge : itemsPerPageSmall;
+    };
+
+    const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+
+    // Update items per page when window is resized
+    useEffect(() => {
+        const handleResize = () => {
+            setItemsPerPage(getItemsPerPage());
+            setCurrentPage(1); // Reset to first page when resizing
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(team.length / itemsPerPage);
+
+    // Get current team members for the page
+    const getCurrentTeamMembers = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return team.slice(startIndex, endIndex);
+    };
 
     useEffect(() => {
         setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches);
@@ -145,6 +178,7 @@ const TeamSection = () => {
             try {
                 const response = await axiosInstance.get(`http://one-stop.ps/api/team?lang=${i18n.language}`);
                 setTeam(response.data);
+                setCurrentPage(1); // Reset to first page when data changes
             } catch (err) {
                 console.error("Error fetching team members:", err.response?.data || err.message);
                 setError(err.response?.data?.error || t('failed_to_load_team') || 'فشل تحميل أعضاء الفريق');
@@ -159,18 +193,12 @@ const TeamSection = () => {
         setShowSocialsForMember((prevId) => (prevId === memberId ? null : memberId));
     };
 
-    const scrollCarousel = (direction) => {
-        if (carouselRef.current) {
-            const cardWidth = carouselRef.current.children[0]?.offsetWidth || 0;
-            const gap = 32; // Corresponds to Tailwind's gap-8
-            const scrollAmount = cardWidth + gap;
-
-            if (direction === 'left') {
-                carouselRef.current.scrollBy({ left: isArabic ? scrollAmount : -scrollAmount, behavior: 'smooth' });
-            } else {
-                carouselRef.current.scrollBy({ left: isArabic ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-            }
-        }
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo({
+            top: document.getElementById('team').offsetTop - 100,
+            behavior: 'smooth'
+        });
     };
 
     return (
@@ -215,20 +243,15 @@ const TeamSection = () => {
                         {t('no_team_members_available') || 'لا يوجد أعضاء في الفريق حاليًا'}
                     </p>
                 ) : (
-                    <div className="relative" style={{ direction: isArabic ? 'rtl' : 'ltr' }}>
-                        <div
-                            ref={carouselRef}
-                            className="flex overflow-x-hidden snap-x snap-mandatory scroll-smooth pb-4"
-                            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
-                        >
-                            {team.map((member, index) => (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                            {getCurrentTeamMembers().map((member, index) => (
                                 <div
                                     key={member.id}
                                     className={`
-                                        flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/3 px-4
                                         bg-white dark:bg-it-dark-blue rounded-lg shadow-lg hover:shadow-xl
                                         transition-all duration-300 transform hover:-translate-y-2
-                                        group relative overflow-hidden snap-center
+                                        group relative overflow-hidden
                                         opacity-0 translate-y-4 animate-fade-in-up
                                     `}
                                     style={{ animationDelay: `${index * 150}ms` }}
@@ -313,49 +336,28 @@ const TeamSection = () => {
                             ))}
                         </div>
 
-                        {team.length > 3 && (
-                            <>
-                                <button
-                                    onClick={() => scrollCarousel('left')}
-                                    className={`absolute top-1/2 ${isArabic ? 'right-0 sm:right-4' : 'left-0 sm:left-4'} transform -translate-y-1/2 bg-it-gray-light-alpha dark:bg-it-dark-blue-light-alpha text-it-dark-blue dark:text-white p-3 rounded-full shadow-lg hover:bg-it-gray-medium-alpha dark:hover:bg-it-dark-blue-medium-alpha transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-it-yellow-light focus:ring-opacity-75 z-10 hidden md:block`}
-                                    aria-label={t('previous_team_member') || 'Previous team member'}
-                                >
-                                    <svg
-                                        className="w-6 h-6"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d={isArabic ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7'}
-                                        />
-                                    </svg>
-                                </button>
-                                <button
-                                    onClick={() => scrollCarousel('right')}
-                                    className={`absolute top-1/2 ${isArabic ? 'left-0 sm:left-4' : 'right-0 sm:right-4'} transform -translate-y-1/2 bg-it-gray-light-alpha dark:bg-it-dark-blue-light-alpha text-it-dark-blue dark:text-white p-3 rounded-full shadow-lg hover:bg-it-gray-medium-alpha dark:hover:bg-it-dark-blue-medium-alpha transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-it-yellow-light focus:ring-opacity-75 z-10 hidden md:block`}
-                                    aria-label={t('next_team_member') || 'Next team member'}
-                                >
-                                    <svg
-                                        className="w-6 h-6"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d={isArabic ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'}
-                                        />
-                                    </svg>
-                                </button>
-                            </>
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className={`flex justify-center mt-8 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                                <div className="flex space-x-2">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                        <button
+                                            key={page}
+                                            onClick={() => handlePageChange(page)}
+                                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-200 ${
+                                                currentPage === page
+                                                    ? 'bg-it-yellow text-it-dark-blue font-bold'
+                                                    : 'bg-it-dark-blue/10 text-it-dark-blue dark:bg-it-dark-blue-light/20 dark:text-white hover:bg-it-dark-blue/20 dark:hover:bg-it-dark-blue-light/30'
+                                            }`}
+                                            aria-label={`Go to page ${page}`}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         )}
-                    </div>
+                    </>
                 )}
             </div>
         </section>

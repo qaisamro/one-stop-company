@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Header = ({ activeSection, setActiveSection }) => {
     const { i18n } = useTranslation();
@@ -9,6 +9,7 @@ const Header = ({ activeSection, setActiveSection }) => {
     const [showHeader, setShowHeader] = useState(true);
     const [isMobileView, setIsMobileView] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
     const itColors = {
         turquoise: '#218A7A',
@@ -134,7 +135,6 @@ const Header = ({ activeSection, setActiveSection }) => {
 
     if (isArabic) {
         // For Arabic, maintain the current desktop arrangement
-        // assuming it's already balanced or desired as is.
         const arabicLinks = links;
         const splitIndex = Math.floor(arabicLinks.length / 2);
         leftLinks = arabicLinks.slice(0, splitIndex);
@@ -186,6 +186,47 @@ const Header = ({ activeSection, setActiveSection }) => {
         }
         return false;
     };
+
+    // دالة معالجة النقر على الروابط
+    const handleNavClick = (href) => {
+        // إذا كان الرابط عبارة عن تجزئة (#) ونحن لسنا في الصفحة الرئيسية
+        if (href.startsWith('#') && location.pathname !== '/') {
+            // انتقل إلى الصفحة الرئيسية مع التجزئة
+            navigate('/', { state: { scrollTo: href } });
+            setIsMenuOpen(false);
+            return;
+        }
+        
+        // إذا كان الرابط عبارة عن تجزئة (#) ونحن في الصفحة الرئيسية
+        if (href.startsWith('#') && location.pathname === '/') {
+            // قم بالتمرير إلى القسم المحدد
+            const element = document.querySelector(href);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                setActiveSection(href);
+            }
+            setIsMenuOpen(false);
+            return;
+        }
+        
+        // للروابط العادية
+        navigate(href);
+        setIsMenuOpen(false);
+    };
+
+    // تحقق من وجود حالة انتقال مع تجزئة
+    useEffect(() => {
+        if (location.state && location.state.scrollTo) {
+            const timer = setTimeout(() => {
+                const element = document.querySelector(location.state.scrollTo);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    setActiveSection(location.state.scrollTo);
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [location]);
 
     const getLinkTo = (href) => {
         if (href.startsWith('#')) {
@@ -253,16 +294,16 @@ const Header = ({ activeSection, setActiveSection }) => {
                             className={`flex-1 flex ${isArabic ? 'justify-start pl-6' : 'justify-start pl-6'} items-center space-x-4 lg:space-x-6 xl:space-x-8 ${isArabic ? 'rtl:space-x-reverse' : ''}`}
                         >
                             {leftLinks.map((link) => (
-                                <Link
+                                <button
                                     key={link.id}
-                                    to={getLinkTo(link.href)}
+                                    onClick={() => handleNavClick(link.href)}
                                     className={`relative group uppercase text-base font-semibold py-2 whitespace-nowrap tracking-wider
                                         ${isLinkActive(link.href) ? 'text-it-yellow' : 'text-gray-200 hover:text-white'}
-                                        transition duration-300`}
+                                        transition duration-300 bg-transparent border-none cursor-pointer`}
                                 >
                                     {link.label}
                                     <span className={`absolute bottom-0 left-0 h-0.5 bg-it-yellow transition-all duration-300 ${isLinkActive(link.href) ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                                </Link>
+                                </button>
                             ))}
                         </nav>
 
@@ -300,16 +341,16 @@ const Header = ({ activeSection, setActiveSection }) => {
                             className={`flex-1 flex ${isArabic ? 'justify-end pr-6' : 'justify-end pr-6'} items-center space-x-4 lg:space-x-6 xl:space-x-8 ${isArabic ? 'rtl:space-x-reverse' : ''}`}
                         >
                             {rightLinks.map((link) => (
-                                <Link
+                                <button
                                     key={link.id}
-                                    to={getLinkTo(link.href)}
+                                    onClick={() => handleNavClick(link.href)}
                                     className={`relative group uppercase text-base font-semibold py-2 whitespace-nowrap tracking-wider
                                         ${isLinkActive(link.href) ? 'text-it-yellow' : 'text-gray-200 hover:text-white'}
-                                        transition duration-300`}
+                                        transition duration-300 bg-transparent border-none cursor-pointer`}
                                 >
                                     {link.label}
                                     <span className={`absolute bottom-0 left-0 h-0.5 bg-it-yellow transition-all duration-300 ${isLinkActive(link.href) ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                                </Link>
+                                </button>
                             ))}
                             <button
                                 onClick={toggleLang}
@@ -373,12 +414,11 @@ const Header = ({ activeSection, setActiveSection }) => {
                 </div>
 
                 {homeLink && (
-                    <Link
-                        to={getLinkTo(homeLink.href)}
-                        onClick={toggleMenu}
+                    <button
+                        onClick={() => handleNavClick(homeLink.href)}
                         className={`block py-4 px-6 transition-all duration-300 ease-in-out uppercase tracking-wider rounded-xl mb-4
                             ${isLinkActive(homeLink.href) ? 'text-it-dark-blue bg-it-yellow font-bold' : 'text-white bg-gray-700/30 hover:bg-it-yellow hover:text-it-dark-blue font-semibold'}
-                            flex items-center gap-3 text-xl`}
+                            flex items-center gap-3 text-xl w-full text-left`}
                         style={{
                             boxShadow: isLinkActive(homeLink.href) ? '0 0 15px rgba(255, 221, 51, 0.7)' : 'none'
                         }}
@@ -387,18 +427,17 @@ const Header = ({ activeSection, setActiveSection }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>
                         {homeLink.label}
-                    </Link>
+                    </button>
                 )}
 
                 <nav className={`flex flex-col gap-y-3 text-white font-medium text-xl flex-grow`}>
                     {otherLinks.map((link) => (
-                        <Link
+                        <button
                             key={link.id}
-                            to={getLinkTo(link.href)}
-                            onClick={toggleMenu}
+                            onClick={() => handleNavClick(link.href)}
                             className={`block py-3 px-6 transition-all duration-300 ease-in-out uppercase tracking-wider rounded-lg
                                 ${isLinkActive(link.href) ? 'text-it-yellow bg-gray-700/50 font-semibold' : 'text-gray-200 hover:text-it-yellow hover:bg-gray-700/30'}
-                                flex items-center gap-3`}
+                                flex items-center gap-3 w-full text-left`}
                         >
                             {/* Icons based on link href - keep consistent */}
                             {link.href === '#about' && (
@@ -434,11 +473,11 @@ const Header = ({ activeSection, setActiveSection }) => {
                             )}
                             {link.href === '#csr' && (
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.405 9.429 5 8 5a2 2 0 00-2 2v6l-2 2h2v4.253a2 2 0 012 2v-.253M12 6.253C13.168 5.405 14.571 5 16 5a2 2 0 012 2v6l2 2h-2v4.253a2 2 0 002 2v-.253"></path>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.405 9.429 5 8 5a2 2 0 00-2 2v6l-2 2h2v4.253a2 2 0 012 2v-.253M12 6.253C13.168 5.405 14.571 5 16 5a2 2 0 012 2v6l2 2h-2v4.253a2 2 0 012 2v-.253"></path>
                                 </svg>
                             )}
                             {link.label}
-                        </Link>
+                        </button>
                     ))}
                 </nav>
 

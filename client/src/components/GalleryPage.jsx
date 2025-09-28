@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaSpinner, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/Gallery.css'; // تأكد من إنشاء هذا الملف
 
 const GalleryPage = () => {
@@ -17,6 +18,20 @@ const GalleryPage = () => {
 
     const API_URL = process.env.REACT_APP_API_URL || 'https://one-stop.ps';
     const token = localStorage.getItem('token');
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    // التحقق من وجود معلمة scrollTo في حالة الموقع
+    useEffect(() => {
+        // إذا كانت هناك معلمة scrollTo في حالة الموقع
+        if (location.state && location.state.scrollTo) {
+            const timer = setTimeout(() => {
+                // الانتقال إلى الصفحة الرئيسية مع التمرير إلى القسم المحدد
+                navigate('/', { state: { scrollTo: location.state.scrollTo }, replace: true });
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [location.state, navigate]);
 
     const fetchImages = async () => {
         setLoading(true);

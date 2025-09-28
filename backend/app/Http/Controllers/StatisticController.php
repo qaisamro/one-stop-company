@@ -93,6 +93,7 @@ class StatisticController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // 💡 هذه الدالة هي المسؤولة عن التعديل (Update) وهي جاهزة بالفعل.
         $validator = Validator::make($request->all(), [
             'label' => 'required|string|max:255',
             'value' => 'required|integer',

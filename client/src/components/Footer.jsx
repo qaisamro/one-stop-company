@@ -17,7 +17,7 @@ const Footer = () => {
   };
 
   // Google Maps URL for "Dura, Hebron, Palestine"
-  const googleMapsUrl = "https://maps.app.goo.gl/fw7Fk7FaZYNteVqE7";
+  const googleMapsUrl = "https://www.google.com/maps/place/31%C2%B030'19.6%22N+35%C2%B002'10.5%22E/@31.505444,35.0375485,18z/data=!3m1!4b1!4m4!3m3!8m2!3d31.505444!4d35.036261?entry=ttu&g_ep=EgoyMDI1MDkyNC4wIKXMDSoASAFQAw%3D%3D";
 
   return (
     <footer className="bg-gray-800 dark:bg-gray-950 text-white py-12 md:py-16">

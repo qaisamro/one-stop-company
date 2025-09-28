@@ -87,12 +87,17 @@ Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminController::class, 'login']);
 });
 
-// مسارات لوحة التحكم المحمية (تتطلب مصادقة Sanctum)
-    // مسارات CSR المحمية
- Route::get('/csr', [CSRController::class, 'index']);
 
 Route::get('/csr/fixed-paragraph', [CSRController::class, 'getFixedParagraph']);
 Route::post('/csr/fixed-paragraph', [CSRController::class, 'saveFixedParagraph']);
+
+
+// مسارات لوحة التحكم المحمية (تتطلب مصادقة Sanctum)
+    // مسارات CSR المحمية
+ // CSR Routes
+// Route to get all CSR items
+Route::get('/csr', [CSRController::class, 'index']);
+
 // Route to get a single CSR item (if needed, though index with editing covers this)
 Route::get('/csr/{id}', [CSRController::class, 'show']);
 
@@ -171,6 +176,8 @@ Route::delete('/csr/image/{csrId}', [CSRController::class, 'deleteImage']);
     Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
 
     // مسارات الإحصائيات (Statistics) المحمية
+    // جميع مسارات الإحصائيات (GET, POST, PUT, DELETE) يجب أن تكون هنا
+    Route::get('/statistics', [StatisticController::class, 'index']);
     Route::post('/statistics', [StatisticController::class, 'store']);
     Route::put('/statistics/{id}', [StatisticController::class, 'update']);
     Route::delete('/statistics/{id}', [StatisticController::class, 'destroy']);
